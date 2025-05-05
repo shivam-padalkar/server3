@@ -1,0 +1,254 @@
+<!-- <!DOCTYPE html>
+<html>
+  <head>
+    <title>Media</title>
+  </head>
+  <body>
+    <nav>
+      <a href="/home">Home</a> | <a href="/media">Media</a> |
+      <a href="/donate">Donate</a> | <a href="/livemap">Live Map</a> |
+      <a href="/reports">Reports</a>
+    </nav>
+
+    <h1>📰 Latest Disaster News</h1>
+    <ul>
+      <li>
+        <strong>Flood in Kerala:</strong> Rescue operations in progress,
+        thousands evacuated.
+      </li>
+      <li>
+        <strong>Earthquake in Nepal:</strong> Tremors felt in northern India as
+        well.
+      </li>
+      <li>
+        <strong>Cyclone Mocha:</strong> Predicted to hit the eastern coast by
+        next week.
+      </li>
+    </ul>
+  </body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Media | Disaster Management</title>
+  </head>
+  <body
+    style="
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f3f4f6;
+      color: #111827;
+    "
+  >
+    <!-- Navbar -->
+    <nav
+      style="
+        background-color: #1f2937;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      "
+    >
+      <h1 style="color: #ffffff; font-size: 1.5rem">DisasterRelief</h1>
+      <div>
+        <a
+          href="/"
+          style="color: #ffffff; text-decoration: none; margin: 0 1rem"
+          >Home</a
+        >
+        <a
+          href="/reports"
+          style="color: #ffffff; text-decoration: none; margin: 0 1rem"
+          >Reports</a
+        >
+        <a
+          href="/livemap"
+          style="color: #ffffff; text-decoration: none; margin: 0 1rem"
+          >Live Map</a
+        >
+        <a
+          href="/donate"
+          style="color: #ffffff; text-decoration: none; margin: 0 1rem"
+          >Donate</a
+        >
+        <a
+          href="/media"
+          style="color: #ffffff; text-decoration: none; margin: 0 1rem"
+          >Media</a
+        >
+      </div>
+    </nav>
+
+    <!-- Media Section -->
+    <section style="padding: 4rem 2rem; max-width: 1100px; margin: auto">
+      <h2 style="font-size: 2.5rem; margin-bottom: 1rem; text-align: center">
+        Disaster Media Gallery
+      </h2>
+      <p style="text-align: center; color: #4b5563; margin-bottom: 3rem">
+        <!-- Browse images captured from recent disaster sites. These visuals help
+        raise awareness and inform the public. -->
+      </p>
+
+      <div
+        style="
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 1.5rem;
+        "
+      >
+        <!-- Media Card: Flood -->
+        <div
+          style="
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+          "
+        >
+          <img
+            src="/uploads/Flood.jpg"
+            alt="Flood"
+            style="width: 100%; height: 200px; object-fit: cover"
+          />
+          <div style="padding: 1rem">
+            <h3 style="margin: 0 0 0.5rem">Severe Flood</h3>
+            <p style="color: #6b7280; font-size: 0.95rem">
+              Flooded streets in Mumbai after heavy rainfall. Emergency teams
+              on-site.
+            </p>
+          </div>
+        </div>
+
+        <!-- Media Card: Wildfire -->
+        <div
+          style="
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+          "
+        >
+          <img
+            src="/uploads/ForestFIre.jpg"
+            alt="Wildfire"
+            style="width: 100%; height: 200px; object-fit: cover"
+          />
+          <div style="padding: 1rem">
+            <h3 style="margin: 0 0 0.5rem">Wildfire Threat</h3>
+            <p style="color: #6b7280; font-size: 0.95rem">
+              Forest fires near Nashik. Evacuations in progress as fire spreads
+              rapidly.
+            </p>
+          </div>
+        </div>
+
+        <!-- Media Card: Earthquake -->
+        <div
+          style="
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+          "
+        >
+          <img
+            src="/uploads/EarthQuake.jpg"
+            alt="Earthquake"
+            style="width: 100%; height: 200px; object-fit: cover"
+          />
+          <div style="padding: 1rem">
+            <h3 style="margin: 0 0 0.5rem">Earthquake Damage</h3>
+            <p style="color: #6b7280; font-size: 0.95rem">
+              6.2 magnitude earthquake hits Gujarat causing damage to buildings
+              and roads.
+            </p>
+          </div>
+        </div>
+
+        <!-- Media Card: Cyclone -->
+        <div
+          style="
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+          "
+        >
+          <img
+            src="/uploads/Cyclone.jpg"
+            alt="Cyclone"
+            style="width: 100%; height: 200px; object-fit: cover"
+          />
+          <div style="padding: 1rem">
+            <h3 style="margin: 0 0 0.5rem">Cyclone Alert</h3>
+            <p style="color: #6b7280; font-size: 0.95rem">
+              Cyclone Nisarga made landfall near Alibaug. Winds over 120km/h
+              recorded.
+            </p>
+          </div>
+        </div>
+
+        <!-- Drought -->
+        <div
+          style="
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+          "
+        >
+          <img
+            src="/uploads/Drought.jpg"
+            alt="Wildfire"
+            style="width: 100%; height: 200px; object-fit: cover"
+          />
+          <div style="padding: 1rem">
+            <h3 style="margin: 0 0 0.5rem">Drought</h3>
+            <p style="color: #6b7280; font-size: 0.95rem">
+              Severe water scarcity grips parts of Maharashtra as prolonged dry
+              spell intensifies drought conditions.
+            </p>
+          </div>
+        </div>
+
+        <!-- Media Card: Wildfire -->
+        <div
+          style="
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+          "
+        >
+          <img
+            src="/uploads/Landslide.jpg"
+            alt="Wildfire"
+            style="width: 100%; height: 200px; object-fit: cover"
+          />
+          <div style="padding: 1rem">
+            <h3 style="margin: 0 0 0.5rem">Land-Slide</h3>
+            <p style="color: #6b7280; font-size: 0.95rem">
+              Uncontrolled construction on steep slopes leads to a devastating
+              landslide in a Darjeeling suburb.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer
+      style="
+        text-align: center;
+        padding: 1rem;
+        background-color: #1f2937;
+        color: white;
+        margin-top: 3rem;
+      "
+    >
+      <p>&copy; 2025 Disaster Management Team. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

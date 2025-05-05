@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disaster Alerts | DisasterRelief</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #3a86ff;
+      --primary-dark: #2667cc;
+      --secondary: #ff006e;
+      --dark: #2b2d42;
+      --light: #f8f9fa;
+      --warning: #ffbe0b;
+      --danger: #fb5607;
+      --success: #06d6a0;
+      --gray: #8d99ae;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-dark);
+    }
+    
+    /* Navbar Styling */
+    .navbar {
+      padding: 1rem 2rem;
+      background-color: rgba(43, 45, 66, 0.95) !important;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .navbar-brand {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: white !important;
+    }
+    
+    .navbar-brand span {
+      color: var(--primary);
+    }
+    
+    .nav-link {
+      color: rgba(255, 255, 255, 0.85) !important;
+      font-weight: 500;
+      margin: 0 0.5rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+      color: white !important;
+    }
+    
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--primary);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    
+    .nav-link.active {
+      color: white !important;
+      font-weight: 600;
+    }
+    
+    .nav-link.active::after {
+      width: 100%;
+    }
+    
+    /* Page Header */
+    .page-header {
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1594467248317-32096fef408f?q=80&w=2070&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      padding: 8rem 0 4rem;
+      position: relative;
+      margin-bottom: 3rem;
+    }
+    
+    .page-header-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0, 18, 50, 0.8) 0%, rgba(0, 0, 0, 0.6) 100%);
+    }
+    
+    .page-header-content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .breadcrumb {
+      background: transparent;
+      padding: 0;
+      margin-bottom: 1rem;
+    }
+    
+    .breadcrumb-item a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    
+    .breadcrumb-item a:hover {
+      color: var(--primary);
+    }
+    
+    .breadcrumb-item.active {
+      color: white;
+    }
+    
+    .breadcrumb-item+.breadcrumb-item::before {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Main Container */
+    .main-container {
+      padding-bottom: 5rem;
+    }
+    
+    /* Alert Styling */
+    .alert-card {
+      background-color: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+      position: relative;
+    }
+    
+    .alert-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .new-alert::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
+      z-index: 1;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(58, 134, 255, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(58, 134, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(58, 134, 255, 0); }
+    }
+    
+    .alert-type {
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      color: white;
+    }
+    
+    .alert-type i {
+      margin-right: 0.75rem;
+    }
+    
+    .alert-type-new {
+      background: linear-gradient(to right, #3a86ff, #4361ee);
+    }
+    
+    .alert-type-update {
+      background: linear-gradient(to right, #ffbe0b, #fb9300);
+    }
+    
+    .alert-type-donation {
+      background: linear-gradient(to right, #06d6a0, #1b9aaa);
+    }
+    
+    .alert-type-emergency {
+      background: linear-gradient(to right, #fb5607, #f72585);
+    }
+    
+    .alert-body {
+      padding: 1.5rem;
+    }
+    
+    .alert-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    
+    .alert-message {
+      color: var(--gray);
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+    
+    .alert-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .alert-time {
+      font-size: 0.85rem;
+      color: var(--gray);
+      display: flex;
+      align-items: center;
+    }
+    
+    .alert-time i {
+      margin-right: 0.5rem;
+      color: var(--primary);
+    }
+    
+    .alert-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    .btn-action {
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      border: none;
+    }
+    
+    .btn-action i {
+      margin-right: 0.5rem;
+      font-size: 0.8rem;
+    }
+    
+    .btn-view {
+      background-color: rgba(58, 134, 255, 0.1);
+      color: var(--primary);
+    }
+    
+    .btn-view:hover {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .btn-mark {
+      background-color: rgba(6, 214, 160, 0.1);
+      color: var(--success);
+    }
+    
+    .btn-mark:hover {
+      background-color: var(--success);
+      color: white;
+    }
+    
+    /* Filter Section */
+    .filter-section {
+      background-color: white;
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .filter-heading {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+    }
+    
+    .filter-heading i {
+      margin-right: 0.75rem;
+      color: var(--primary);
+    }
+    
+    .filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      background-color: white;
+      color: var(--gray);
+      cursor: pointer;
+    }
+    
+    .filter-btn:hover {
+      background-color: rgba(58, 134, 255, 0.05);
+      color: var(--primary);
+      border-color: rgba(58, 134, 255, 0.2);
+    }
+    
+    .filter-btn.active {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    .filter-btn i {
+      margin-right: 0.5rem;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 2rem;
+    }
+    
+    .stat-card {
+      background-color: white;
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 1.5rem;
+    }
+    
+    .stat-icon-blue {
+      background-color: rgba(58, 134, 255, 0.1);
+      color: var(--primary);
+    }
+    
+    .stat-icon-orange {
+      background-color: rgba(251, 86, 7, 0.1);
+      color: var(--danger);
+    }
+    
+    .stat-icon-green {
+      background-color: rgba(6, 214, 160, 0.1);
+      color: var(--success);
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+    }
+    
+    .stat-label {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+    
+    .info-card {
+      background-color: white;
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .info-heading {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+    }
+    
+    .info-heading i {
+      margin-right: 0.75rem;
+      color: var(--primary);
+    }
+    
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .info-list li {
+      display: flex;
+      align-items: flex-start;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .info-list li:last-child {
+      border-bottom: none;
+    }
+    
+    .info-list li i {
+      color: var(--primary);
+      margin-right: 0.75rem;
+      margin-top: 0.3rem;
+    }
+    
+    .info-list li div {
+      flex: 1;
+    }
+    
+    .info-list li strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      color: var(--dark);
+    }
+    
+    .info-list li span {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+    
+    /* No Alerts */
+    .no-alerts {
+      text-align: center;
+      padding: 3rem;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .no-alerts img {
+      max-width: 200px;
+      margin-bottom: 1.5rem;
+      opacity: 0.7;
+    }
+    
+    .no-alerts h3 {
+      margin-bottom: 1rem;
+      color: var(--dark);
+    }
+    
+    .no-alerts p {
+      color: var(--gray);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    /* Pagination */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+    
+    .pagination {
+      display: flex;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .page-item {
+      margin: 0 0.25rem;
+    }
+    
+    .page-link {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      color: var(--gray);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    
+    .page-link:hover {
+      background-color: rgba(58, 134, 255, 0.05);
+      color: var(--primary);
+      border-color: rgba(58, 134, 255, 0.2);
+    }
+    
+    .page-item.active .page-link {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    .page-item.disabled .page-link {
+      color: #d0d0d0;
+      pointer-events: none;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+      .sidebar {
+        position: static;
+        margin-bottom: 2rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .filter-buttons {
+        flex-wrap: wrap;
+      }
+      
+      .alert-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .alert-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .filter-section {
+        padding: 1rem;
+      }
+      
+      .alert-card {
+        border-radius: 10px;
+      }
+      
+      .alert-type {
+        padding: 0.5rem 1rem;
+      }
+      
+      .alert-body {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">Disaster<span>Relief</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/reports">Reports</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/media">Media</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/livemap">Live Map</a>
+          </li>
+          <% if(currentUser && currentUser.userType === 'donor') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/donor/dashboard">My Dashboard</a>
+            </li>
+          <% } else if(currentUser && currentUser.userType === 'admin') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin">Admin</a>
+            </li>
+          <% } %>
+          <% if(currentUser) { %>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle me-1"></i><%= currentUser.name || currentUser.username %>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                <li><a class="dropdown-item" href="/alerts" style="background-color: rgba(58, 134, 255, 0.1);"><i class="fas fa-bell me-2"></i>Alerts <span class="badge bg-primary">12</span></a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+              </ul>
+            </li>
+          <% } else { %>
+            <li class="nav-item ms-3">
+              <a href="/login" class="btn btn-login">Login</a>
+            </li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="page-header-overlay"></div>
+    <div class="container page-header-content">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/"><i class="fas fa-home me-1"></i>Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Alerts</li>
+        </ol>
+      </nav>
+      <h1 class="display-4 fw-bold" data-aos="fade-up">Disaster Alerts</h1>
+      <p class="lead" data-aos="fade-up" data-aos-delay="100">Stay updated with the latest alerts and notifications about ongoing disasters and relief efforts.</p>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <div class="container main-container">
+    <div class="row">
+      <!-- Main Content -->
+      <div class="col-lg-8" data-aos="fade-up">
+        <!-- Filter Section -->
+        <div class="filter-section">
+          <h3 class="filter-heading"><i class="fas fa-filter"></i> Filter Alerts</h3>
+          <div class="filter-buttons">
+            <button class="filter-btn active"><i class="fas fa-th-list"></i> All Alerts</button>
+            <button class="filter-btn"><i class="fas fa-exclamation-circle"></i> New Disasters</button>
+            <button class="filter-btn"><i class="fas fa-sync-alt"></i> Updates</button>
+            <button class="filter-btn"><i class="fas fa-hand-holding-heart"></i> Donation Needs</button>
+            <button class="filter-btn"><i class="fas fa-check-circle"></i> Completed</button>
+          </div>
+        </div>
+        
+        <!-- Alerts List -->
+        <% if (alerts && alerts.length > 0) { %>
+          <% alerts.forEach(function(alert) { %>
+            <div class="alert-card <%= !alert.seen ? 'new-alert' : '' %>" data-aos="fade-up">
+              <% let alertTypeClass, alertTypeIcon, alertTypeName;
+                 switch(alert.alertType) {
+                   case 'new_disaster':
+                     alertTypeClass = 'alert-type-new';
+                     alertTypeIcon = 'fas fa-exclamation-circle';
+                     alertTypeName = 'New Disaster';
+                     break;
+                   case 'update':
+                     alertTypeClass = 'alert-type-update';
+                     alertTypeIcon = 'fas fa-sync-alt';
+                     alertTypeName = 'Status Update';
+                     break;
+                   case 'donation_needed':
+                     alertTypeClass = 'alert-type-donation';
+                     alertTypeIcon = 'fas fa-hand-holding-heart';
+                     alertTypeName = 'Donation Needed';
+                     break;
+                   case 'donation_received':
+                     alertTypeClass = 'alert-type-emergency';
+                     alertTypeIcon = 'fas fa-check-circle';
+                     alertTypeName = 'Donation Received';
+                     break;
+                   default:
+                     alertTypeClass = 'alert-type-new';
+                     alertTypeIcon = 'fas fa-bell';
+                     alertTypeName = 'Alert';
+                 }
+              %>
+              <div class="alert-type <%= alertTypeClass %>">
+                <i class="<%= alertTypeIcon %>"></i> <%= alertTypeName %>
+              </div>
+              <div class="alert-body">
+                <h3 class="alert-title"><%= alert.title %></h3>
+                <p class="alert-message"><%= alert.message %></p>
+                <div class="alert-footer">
+                  <div class="alert-time">
+                    <i class="far fa-calendar-alt"></i> <%= new Date(alert.createdAt).toLocaleString() %>
+                  </div>
+                  <div class="alert-actions">
+                    <button class="btn-action btn-mark" onclick="markAsRead('<%= alert._id %>')">
+                      <i class="fas fa-check"></i> Mark as Read
+                    </button>
+                    <a href="/reports/<%= alert.reportId %>" class="btn-action btn-view">
+                      <i class="fas fa-external-link-alt"></i> View Report
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+          
+          <!-- Pagination -->
+          <div class="pagination-container">
+            <ul class="pagination">
+              <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Previous">
+                  <i class="fas fa-chevron-left"></i>
+                </a>
+              </li>
+              <li class="page-item active"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item">
+                <a class="page-link" href="#" aria-label="Next">
+                  <i class="fas fa-chevron-right"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+        <% } else { %>
+          <!-- No Alerts -->
+          <div class="no-alerts" data-aos="fade-up">
+            <img src="https://images.unsplash.com/photo-1594079995976-fe60fd8eaea8?q=80&w=2071&auto=format&fit=crop" alt="No alerts">
+            <h3>No Alerts Found</h3>
+            <p>You don't have any alerts at the moment. Alerts will appear here when there are new disasters, updates, or donation needs.</p>
+          </div>
+        <% } %>
+      </div>
+      
+      <!-- Sidebar -->
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="sidebar">
+          <!-- Alert Stats -->
+          <div class="row">
+            <div class="col-md-6 col-lg-12">
+              <div class="stat-card">
+                <div class="stat-icon stat-icon-blue">
+                  <i class="fas fa-bell"></i>
+                </div>
+                <div class="stat-value">12</div>
+                <div class="stat-label">Total Alerts</div>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-12">
+              <div class="stat-card">
+                <div class="stat-icon stat-icon-orange">
+                  <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="stat-value">3</div>
+                <div class="stat-label">Unread Alerts</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Alert Info -->
+          <div class="info-card">
+            <h3 class="info-heading"><i class="fas fa-info-circle"></i> Alert Information</h3>
+            <ul class="info-list">
+              <li>
+                <i class="fas fa-exclamation-circle"></i>
+                <div>
+                  <strong>New Disaster</strong>
+                  <span>Alerts for newly reported disasters</span>
+                </div>
+              </li>
+              <li>
+                <i class="fas fa-sync-alt"></i>
+                <div>
+                  <strong>Status Update</strong>
+                  <span>Updates to existing disaster reports</span>
+                </div>
+              </li>
+              <li>
+                <i class="fas fa-hand-holding-heart"></i>
+                <div>
+                  <strong>Donation Needed</strong>
+                  <span>Requests for urgent resource donations</span>
+                </div>
+              </li>
+              <li>
+                <i class="fas fa-check-circle"></i>
+                <div>
+                  <strong>Donation Received</strong>
+                  <span>Confirmations of received donations</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Current User Info -->
+          <div class="info-card">
+            <h3 class="info-heading"><i class="fas fa-user"></i> Your Information</h3>
+            <ul class="info-list">
+              <li>
+                <i class="fas fa-user-circle"></i>
+                <div>
+                  <strong>User</strong>
+                  <span><%= currentUser ? (currentUser.name || currentUser.username) : 'muhammadparkar' %></span>
+                </div>
+              </li>
+              <li>
+                <i class="fas fa-clock"></i>
+                <div>
+                  <strong>Current Time (UTC)</strong>
+                  <span>2025-04-20 19:49:42</span>
+                </div>
+              </li>
+              <li>
+                <i class="fas fa-cog"></i>
+                <div>
+                  <strong>Alert Settings</strong>
+                  <span><a href="/settings" class="text-primary">Manage notification preferences</a></span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back to Top Button -->
+  <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- AOS Animation Library -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    // Initialize AOS animation
+    AOS.init({
+      once: true,
+      duration: 800
+    });
+    
+    // Back to top button
+    window.addEventListener('scroll', function() {
+      const backToTop = document.querySelector('.back-to-top');
+      if (window.scrollY > 300) {
+        backToTop.classList.add('active');
+      } else {
+        backToTop.classList.remove('active');
+      }
+    });
+    
+    // Mark alert as read
+    function markAsRead(alertId) {
+      // Here you would normally send an AJAX request to update the alert status
+      // For demo purposes, we'll just update the UI
+      console.log(`Marking alert ${alertId} as read`);
+      
+      // Find the alert card and remove the new-alert class
+      const alertCard = event.target.closest('.alert-card');
+      if (alertCard) {
+        alertCard.classList.remove('new-alert');
+      }
+      
+      // Update unread count
+      const unreadCount = document.querySelector('.stat-value:nth-of-type(2)');
+      if (unreadCount) {
+        let count = parseInt(unreadCount.textContent);
+        if (count > 0) {
+          unreadCount.textContent = count - 1;
+        }
+      }
+    }
+    
+    // Filter buttons
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active class from all buttons
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Here you would normally filter the alerts based on the selected category
+        // For demo purposes, we'll just log the filter
+        console.log(`Filtering by: ${this.textContent.trim()}`);
+      });
+    });
+  </script>
+</body>
+</html>

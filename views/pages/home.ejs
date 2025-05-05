@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disaster Management System</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #3a86ff;
+      --primary-dark: #2667cc;
+      --secondary: #ff006e;
+      --dark: #2b2d42;
+      --light: #f8f9fa;
+      --warning: #ffbe0b;
+      --danger: #fb5607;
+      --success: #06d6a0;
+      --gray: #8d99ae;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-dark);
+    }
+    
+    /* Navbar Styling */
+    .navbar {
+      padding: 1rem 2rem;
+      background-color: rgba(43, 45, 66, 0.95) !important;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .navbar-scrolled {
+      padding: 0.5rem 2rem;
+    }
+    
+    .navbar-brand {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: white !important;
+    }
+    
+    .navbar-brand span {
+      color: var(--primary);
+    }
+    
+    .nav-link {
+      color: rgba(255, 255, 255, 0.85) !important;
+      font-weight: 500;
+      margin: 0 0.5rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+      color: white !important;
+    }
+    
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--primary);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    
+    .nav-link.active {
+      color: white !important;
+      font-weight: 600;
+    }
+    
+    .nav-link.active::after {
+      width: 100%;
+    }
+    
+    .user-info {
+      color: white;
+      font-weight: 500;
+    }
+    
+    .btn-login {
+      background-color: transparent;
+      border: 2px solid var(--primary);
+      color: white;
+      border-radius: 50px;
+      padding: 0.4rem 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-login:hover {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1473976345543-9ffc928e648d?q=80&w=2070&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+      padding: 12rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 10;
+    }
+    
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0, 18, 50, 0.8) 0%, rgba(0, 0, 0, 0.6) 100%);
+    }
+    
+    .hero h1 {
+      font-size: 4rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+      letter-spacing: -0.5px;
+    }
+    
+    .hero p {
+      font-size: 1.3rem;
+      max-width: 700px;
+      margin: 0 auto 2.5rem;
+      font-weight: 300;
+      line-height: 1.6;
+    }
+    
+    .cta-button {
+      display: inline-block;
+      background-color: var(--primary);
+      color: white;
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(58, 134, 255, 0.3);
+      border: none;
+    }
+    
+    .cta-button:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(58, 134, 255, 0.4);
+      color: white;
+    }
+    
+    .cta-button:active {
+      transform: translateY(-1px);
+    }
+    
+    .hero-stats {
+      margin-top: 3rem;
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+    }
+    
+    .stat-item {
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+    }
+    
+    .stat-label {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    
+    /* Features Section */
+    .features {
+      padding: 7rem 0;
+      background-color: white;
+      position: relative;
+    }
+    
+    .section-title {
+      text-align: center;
+      margin-bottom: 4rem;
+      position: relative;
+    }
+    
+    .section-title h2 {
+      font-size: 2.5rem;
+      color: var(--dark);
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .section-title p {
+      max-width: 600px;
+      margin: 0 auto;
+      color: var(--gray);
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    
+    .feature-item {
+      padding: 2.5rem;
+      text-align: center;
+      border-radius: 10px;
+      background-color: white;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      height: 100%;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    .feature-item:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      border-bottom: 3px solid var(--primary);
+    }
+    
+    .feature-icon {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      background-color: rgba(58, 134, 255, 0.1);
+      color: var(--primary);
+      transition: all 0.3s ease;
+    }
+    
+    .feature-item:hover .feature-icon {
+      background-color: var(--primary);
+      color: white;
+      transform: rotateY(180deg);
+    }
+    
+    .feature-item h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--dark);
+      font-weight: 600;
+    }
+    
+    .feature-item p {
+      color: var(--gray);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    
+    /* Recent Disasters Section */
+    .recent-disasters {
+      padding: 7rem 0;
+      background-color: #f8f9fa;
+      position: relative;
+    }
+    
+    .disaster-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      height: 100%;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    .disaster-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    
+    .disaster-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      transition: all 0.5s ease;
+    }
+    
+    .disaster-card:hover img {
+      transform: scale(1.05);
+    }
+    
+    .disaster-content {
+      padding: 1.8rem;
+    }
+    
+    .disaster-content h3 {
+      margin-top: 0.5rem;
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    
+    .disaster-content p {
+      margin-bottom: 1rem;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+    
+    .disaster-status {
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      letter-spacing: 0.5px;
+    }
+    
+    .status-pending {
+      background-color: rgba(255, 190, 11, 0.15);
+      color: var(--warning);
+    }
+    
+    .status-critical {
+      background-color: rgba(251, 86, 7, 0.15);
+      color: var(--danger);
+    }
+    
+    .status-resolved {
+      background-color: rgba(6, 214, 160, 0.15);
+      color: var(--success);
+    }
+    
+    .disaster-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .disaster-date {
+      display: flex;
+      align-items: center;
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+    
+    .disaster-date i {
+      margin-right: 0.5rem;
+      color: var(--primary);
+    }
+    
+    .view-details {
+      display: inline-flex;
+      align-items: center;
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    
+    .view-details i {
+      margin-left: 0.5rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .view-details:hover {
+      color: var(--primary-dark);
+    }
+    
+    .view-details:hover i {
+      transform: translateX(5px);
+    }
+    
+    .view-more-btn {
+      display: inline-block;
+      background-color: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      margin-top: 3rem;
+    }
+    
+    .view-more-btn:hover {
+      background-color: var(--primary);
+      color: white;
+      transform: translateY(-3px);
+    }
+    
+    .view-more-btn i {
+      margin-left: 0.5rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .view-more-btn:hover i {
+      transform: translateX(5px);
+    }
+    
+    /* Call to Action Section */
+    .cta-section {
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1573790387438-4da905039392?q=80&w=2125&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+      padding: 7rem 0;
+      text-align: center;
+      position: relative;
+    }
+    
+    .cta-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(58, 134, 255, 0.8) 0%, rgba(255, 0, 110, 0.8) 100%);
+    }
+    
+    .cta-content {
+      position: relative;
+      z-index: 10;
+    }
+    
+    .cta-section h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .cta-section p {
+      max-width: 700px;
+      margin: 0 auto 2.5rem;
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+    
+    .btn-secondary {
+      background-color: white;
+      color: var(--primary);
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+      border: none;
+    }
+    
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.9);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3);
+      color: var(--primary-dark);
+    }
+    
+    /* Testimonials Section */
+    .testimonials {
+      padding: 7rem 0;
+      background-color: white;
+      position: relative;
+    }
+    
+    .testimonial-item {
+      text-align: center;
+      padding: 3rem 2rem;
+      border-radius: 10px;
+      background-color: white;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      margin: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .testimonial-item:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    
+    .testimonial-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin: 0 auto 1.5rem;
+      border: 5px solid rgba(58, 134, 255, 0.1);
+      overflow: hidden;
+    }
+    
+    .testimonial-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .testimonial-content {
+      margin-bottom: 1.5rem;
+      font-style: italic;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+    
+    .testimonial-content::before,
+    .testimonial-content::after {
+      content: '"';
+      color: var(--primary);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .testimonial-author {
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 0.3rem;
+    }
+    
+    .testimonial-role {
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+    
+    .testimonial-rating {
+      color: #ffbe0b;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--dark);
+      color: white;
+      padding: 5rem 0 2rem;
+    }
+    
+    .footer-logo {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .footer-logo span {
+      color: var(--primary);
+    }
+    
+    .footer-about {
+      margin-bottom: 2rem;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.7;
+    }
+    
+    .footer-heading {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      padding-bottom: 0.8rem;
+    }
+    
+    .footer-heading::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background: var(--primary);
+    }
+    
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .footer-links li {
+      margin-bottom: 0.8rem;
+    }
+    
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+      color: var(--primary);
+      padding-left: 5px;
+    }
+    
+    .footer-contact-item {
+      display: flex;
+      margin-bottom: 1rem;
+    }
+    
+    .footer-contact-icon {
+      margin-right: 1rem;
+      color: var(--primary);
+    }
+    
+    .footer-contact-text {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .social-icons {
+      display: flex;
+      margin-top: 1.5rem;
+    }
+    
+    .social-icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      margin-right: 1rem;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    
+    .social-icon:hover {
+      background-color: var(--primary);
+      transform: translateY(-5px);
+    }
+    
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 2rem;
+      margin-top: 4rem;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    /* Back to Top Button */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .back-to-top.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .back-to-top:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-5px);
+      color: white;
+    }
+    
+    /* Animation Classes */
+    .fade-in {
+      animation: fadeIn 1s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+      .hero h1 {
+        font-size: 3rem;
+      }
+      
+      .hero-stats {
+        flex-wrap: wrap;
+        gap: 1.5rem;
+      }
+      
+      .section-title h2 {
+        font-size: 2rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .hero {
+        padding: 8rem 1rem;
+      }
+      
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      
+      .hero p {
+        font-size: 1.1rem;
+      }
+      
+      .hero-stats {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .navbar-toggler {
+        border: none;
+        padding: 0;
+      }
+      
+      .navbar-toggler:focus {
+        box-shadow: none;
+      }
+      
+      .navbar-toggler-icon {
+        width: 1.5em;
+        height: 1.5em;
+      }
+      
+      .feature-item,
+      .disaster-card {
+        margin-bottom: 2rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+      
+      .section-title h2 {
+        font-size: 1.7rem;
+      }
+      
+      .cta-button,
+      .btn-secondary {
+        padding: 0.8rem 1.8rem;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">Disaster<span>Relief</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/reports">Reports</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/media">Media</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/livemap">Live Map</a>
+          </li>
+          <% if(currentUser && currentUser.userType === 'donor') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/donor/dashboard">My Dashboard</a>
+            </li>
+          <% } else if(currentUser && currentUser.userType === 'admin') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin">Admin</a>
+            </li>
+          <% } %>
+          <% if(currentUser) { %>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle me-1"></i><%= currentUser.name || currentUser.username %>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+              </ul>
+            </li>
+          <% } else { %>
+            <li class="nav-item ms-3">
+              <a href="/login" class="btn btn-login">Login</a>
+            </li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content" data-aos="fade-up" data-aos-duration="1000">
+      <h1>Disaster Relief & Management System</h1>
+      <p>Empowering communities to recover from disasters through real-time reporting, resource tracking, and coordinated response efforts.</p>
+      <a href="/reports/new" class="cta-button"><i class="fas fa-clipboard-list me-2"></i>Report Disaster</a>
+      
+      <div class="hero-stats">
+        <div class="stat-item" data-aos="fade-up" data-aos-delay="200">
+          <div class="stat-number" id="stat-count-1">75+</div>
+          <div class="stat-label">Active Missions</div>
+        </div>
+        <div class="stat-item" data-aos="fade-up" data-aos-delay="300">
+          <div class="stat-number" id="stat-count-2">120K</div>
+          <div class="stat-label">People Helped</div>
+        </div>
+        <div class="stat-item" data-aos="fade-up" data-aos-delay="400">
+          <div class="stat-number" id="stat-count-3">50+</div>
+          <div class="stat-label">Partner Organizations</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action Section -->
+  <section class="cta-section">
+    <div class="cta-overlay"></div>
+    <div class="container cta-content" data-aos="fade-up">
+      <h2>Ready to Make a Difference?</h2>
+      <p>Join our network of volunteers and donors to help communities recover from disasters. Your contribution can save lives and rebuild homes.</p>
+      <!-- <a href="/volunteer" class="btn-secondary me-3 mb-3 mb-md-0"><i class="fas fa-user-plus me-2"></i>Volunteer Now</a> -->
+      <a href="/reports" class="cta-button"><i class="fas fa-hand-holding-heart me-2"></i>Make a Donation</a>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="container">
+      <div class="section-title" data-aos="fade-up">
+        <h2>How Our Platform Works</h2>
+        <p>Our platform connects those affected by disasters with those who can help, providing tools for efficient disaster management.</p>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100" onclick="window.location.href='/reports/new'" style="cursor: pointer;">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-clipboard-list"></i>
+            </div>
+            <h3>Report Disasters</h3>
+            <p>Submit detailed reports about disasters with location information, severity assessment, and resource requirements.</p>
+          </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200" onclick="window.location.href='/livemap'" style="cursor: pointer;">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-map-marked-alt"></i>
+            </div>
+            <h3>Live Map</h3>
+            <p>View disaster locations on an interactive map to understand affected areas and coordinate response efforts effectively.</p>
+          </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300" onclick="window.location.href='/reports'" style="cursor: pointer;">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-hands-helping"></i>
+            </div>
+            <h3>Donate Resources</h3>
+            <p>Easily donate required resources to help affected communities recover faster and rebuild their lives after disasters.</p>
+          </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="400">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-bell"></i>
+            </div>
+            <h3>Real-time Alerts</h3>
+            <p>Receive instant notifications about new disasters, updates, and urgent resource needs in your preferred areas.</p>
+          </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="500">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3>Track Progress</h3>
+            <p>Monitor the progress of relief efforts, resource allocation, and recovery projects through detailed analytics.</p>
+          </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="600">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3>Community Engagement</h3>
+            <p>Connect with volunteers, agencies, and affected communities to coordinate efforts and share critical information.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Disasters Section -->
+  <section class="recent-disasters">
+    <div class="container">
+      <div class="section-title" data-aos="fade-up">
+        <h2>Recent Disasters</h2>
+        <p>Stay updated with the latest disaster reports from around the country and learn how you can help.</p>
+      </div>
+      
+      <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="disaster-card">
+            <img src="https://unsplash.com/photos/man-in-gray-jacket-and-gray-pants-standing-beside-black-car-during-daytime-qVULJ6acwe8" alt="Flood in Mumbai">
+            <div class="disaster-content">
+              <span class="disaster-status status-critical">Critical</span>
+              <h3>Flood in Mumbai</h3>
+              <p>Heavy rainfall has caused flooding in several areas of Mumbai, affecting thousands of residents and damaging infrastructure.</p>
+              <div class="disaster-footer">
+                <div class="disaster-date">
+                  <i class="fas fa-calendar-alt"></i> April 18, 2025
+                </div>
+                <a href="/reports" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="disaster-card">
+            <img src="https://images.unsplash.com/photo-1593095934703-83c395da893e?q=80&w=2070&auto=format&fit=crop" alt="Earthquake in Delhi">
+            <div class="disaster-content">
+              <span class="disaster-status status-pending">Pending</span>
+              <h3>Earthquake in Delhi</h3>
+              <p>A 5.8 magnitude earthquake has affected parts of Delhi and surrounding areas, with assessment teams currently evaluating damage.</p>
+              <div class="disaster-footer">
+                <div class="disaster-date">
+                  <i class="fas fa-calendar-alt"></i> April 15, 2025
+                </div>
+                <a href="/reports" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+          <div class="disaster-card">
+            <img src="https://images.unsplash.com/photo-1603947214038-0b4010918421?q=80&w=1965&auto=format&fit=crop" alt="Cyclone in Chennai">
+            <div class="disaster-content">
+              <span class="disaster-status status-resolved">Resolved</span>
+              <h3>Cyclone in Chennai</h3>
+              <p>Cyclone has been successfully managed with minimal damage to property and no casualties thanks to early warning systems.</p>
+              <div class="disaster-footer">
+                <div class="disaster-date">
+                  <i class="fas fa-calendar-alt"></i> April 10, 2025
+                </div>
+                <a href="/reports" class="view-details">View Details <i class="fas fa-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="text-center" data-aos="fade-up" data-aos-delay="400">
+        <a href="/reports" class="view-more-btn">View All Reports <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Testimonials Section -->
+  <section class="testimonials">
+    <div class="container">
+      <div class="section-title" data-aos="fade-up">
+        <h2>Success Stories</h2>
+        <p>Hear from those who've experienced our disaster management services firsthand.</p>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="testimonial-item">
+            <div class="testimonial-avatar">
+              <img src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?q=80&w=2070&auto=format&fit=crop" alt="Rajesh Kumar">
+            </div>
+            <div class="testimonial-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <div class="testimonial-content">
+              The response team arrived within hours after we reported the flood in our area. Their coordination and resource management saved many lives in our community.
+            </div>
+            <div class="testimonial-author">Rajesh Kumar</div>
+            <div class="testimonial-role">Community Leader, Mumbai</div>
+          </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="testimonial-item">
+            <div class="testimonial-avatar">
+              <img src="https://images.unsplash.com/photo-1614644147724-2d4785d69962?q=80&w=1964&auto=format&fit=crop" alt="Priya Sharma">
+            </div>
+            <div class="testimonial-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+            </div>
+            <div class="testimonial-content">
+              As a donor, I appreciate the transparency in how resources are allocated. The live updates and detailed reports helped me trust that my contributions were making a real impact.
+            </div>
+            <div class="testimonial-author">Priya Sharma</div>
+            <div class="testimonial-role">Regular Donor</div>
+          </div>
+        </div>
+        
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+          <div class="testimonial-item">
+            <div class="testimonial-avatar">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop" alt="Amit Patel">
+            </div>
+            <div class="testimonial-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <div class="testimonial-content">
+              The live map feature was crucial during the earthquake response. It helped us identify areas that needed immediate attention and coordinate our relief efforts efficiently.
+            </div>
+            <div class="testimonial-author">Amit Patel</div>
+            <div class="testimonial-role">Relief Organization Coordinator</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 mb-5 mb-lg-0">
+          <div class="footer-logo">Disaster<span>Relief</span></div>
+          <p class="footer-about">Our mission is to provide efficient disaster management solutions that connect those in need with those who can help, saving lives and rebuilding communities.</p>
+          <div class="social-icons">
+            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-6 mb-5 mb-md-0">
+          <h4 class="footer-heading">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="/"><i class="fas fa-angle-right me-2"></i>Home</a></li>
+            <li><a href="/reports"><i class="fas fa-angle-right me-2"></i>Reports</a></li>
+            <li><a href="/media"><i class="fas fa-angle-right me-2"></i>Media</a></li>
+            <li><a href="/livemap"><i class="fas fa-angle-right me-2"></i>Live Map</a></li>
+            <li><a href="/about"><i class="fas fa-angle-right me-2"></i>About Us</a></li>
+          </ul>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-5 mb-md-0">
+          <h4 class="footer-heading">Useful Links</h4>
+          <ul class="footer-links">
+            <li><a href="/volunteer"><i class="fas fa-angle-right me-2"></i>Become a Volunteer</a></li>
+            <li><a href="/donate"><i class="fas fa-angle-right me-2"></i>Make a Donation</a></li>
+            <li><a href="/partners"><i class="fas fa-angle-right me-2"></i>Partner Organizations</a></li>
+            <li><a href="/training"><i class="fas fa-angle-right me-2"></i>Training Resources</a></li>
+            <li><a href="/faq"><i class="fas fa-angle-right me-2"></i>FAQs</a></li>
+          </ul>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+          <h4 class="footer-heading">Contact Us</h4>
+          <div class="footer-contact-item">
+            <div class="footer-contact-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="footer-contact-text">
+              123 Relief Road, Mumbai, India
+            </div>
+          </div>
+          <div class="footer-contact-item">
+            <div class="footer-contact-icon">
+              <i class="fas fa-phone-alt"></i>
+            </div>
+            <div class="footer-contact-text">
+              +91 1234567890
+            </div>
+          </div>
+          <div class="footer-contact-item">
+            <div class="footer-contact-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div class="footer-contact-text">
+              info@disasterrelief.org
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 Disaster Relief Management System | Developed by <%= currentUser ? currentUser.name || currentUser.username : 'muhammadparkar' %></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top Button -->
+  <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- AOS Animation Library -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    // Initialize AOS animation
+    AOS.init({
+      once: true
+    });
+    
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('.navbar');
+      if (window.scrollY > 50) {
+        navbar.classList.add('navbar-scrolled');
+      } else {
+        navbar.classList.remove('navbar-scrolled');
+      }
+      
+      // Back to top button visibility
+      const backToTop = document.querySelector('.back-to-top');
+      if (window.scrollY > 300) {
+        backToTop.classList.add('active');
+      } else {
+        backToTop.classList.remove('active');
+      }
+    });
+    
+    // Animated counter for stats
+    const stats = document.querySelectorAll('.stat-number');
+    
+    function animateValue(obj, start, end, duration) {
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        obj.innerHTML = Math.floor(progress * (end - start) + start) + (obj.id === 'stat-count-2' ? 'K' : '+');
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+    
+    // Trigger animation when stats are in viewport
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          if (entry.target.id === 'stat-count-1') {
+            animateValue(entry.target, 0, 75, 2000);
+          } else if (entry.target.id === 'stat-count-2') {
+            animateValue(entry.target, 0, 120, 2000);
+          } else if (entry.target.id === 'stat-count-3') {
+            animateValue(entry.target, 0, 50, 2000);
+          }
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    
+    stats.forEach(stat => {
+      observer.observe(stat);
+    });
+  </script>
+</body>
+</html>

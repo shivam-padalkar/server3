@@ -1,0 +1,36 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h2>Email Configuration</h2>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info">
+            <strong>Current Email Account:</strong> <%= emailUsername %>
+          </div>
+          
+          <h4>Test Email Functionality</h4>
+          <p>Click the button below to send a test email to your account (<%= currentUser.email %>).</p>
+          
+          <div class="d-grid gap-2">
+            <a href="/admin/email-test" class="btn btn-primary">Send Test Email</a>
+          </div>
+          
+          <hr>
+          
+          <h4>Troubleshooting</h4>
+          <ul>
+            <li>Make sure your .env file contains EMAIL_USERNAME and EMAIL_PASSWORD</li>
+            <li>If using Gmail, you need to use an App Password</li>
+            <li>Check server logs for detailed error messages</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

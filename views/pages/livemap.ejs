@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Disaster Map</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    :root {
+      --primary: #3a86ff;
+      --primary-dark: #2667cc;
+      --secondary: #ff006e;
+      --dark: #1f2937;
+      --light: #f8f9fa;
+      --warning: #ffbe0b;
+      --danger: #fb5607;
+      --success: #06d6a0;
+      --gray: #8d99ae;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-dark);
+    }
+    
+    /* Navbar Styling */
+    .navbar {
+      padding: 1rem 2rem;
+      background-color: rgba(31, 41, 55, 0.95) !important;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .navbar-scrolled {
+      padding: 0.5rem 2rem;
+    }
+    
+    .navbar-brand {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1.7rem;
+      color: white !important;
+    }
+    
+    .navbar-brand span {
+      color: var(--primary);
+    }
+    
+    .nav-link {
+      color: rgba(255, 255, 255, 0.85) !important;
+      font-weight: 500;
+      margin: 0 0.5rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+      color: white !important;
+    }
+    
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--primary);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    
+    .nav-link.active {
+      color: white !important;
+      font-weight: 600;
+    }
+    
+    .nav-link.active::after {
+      width: 100%;
+    }
+    
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1500491460312-c32fc2dbc751?q=80&w=2070&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      padding: 8rem 2rem 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0, 18, 50, 0.8) 0%, rgba(0, 0, 0, 0.6) 100%);
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 10;
+    }
+    
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+      letter-spacing: -0.5px;
+    }
+    
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 0 auto 2rem;
+      font-weight: 300;
+      line-height: 1.6;
+      opacity: 0.9;
+    }
+    
+    /* Map Container */
+    .map-section {
+      padding: 3rem 0 5rem;
+      position: relative;
+    }
+    
+    .map-container {
+      position: relative;
+      height: 680px;
+      width: 90%;
+      margin: 0 auto;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      border: 10px solid white;
+    }
+    
+    #map {
+      height: 100%;
+      width: 100%;
+      z-index: 1;
+    }
+    
+    .map-overlay {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      z-index: 2;
+      max-width: 280px;
+    }
+    
+    .map-stats {
+      margin-bottom: 1rem;
+    }
+    
+    .map-stats h4 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: var(--dark);
+    }
+    
+    .stat-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    
+    .stat-dot.critical {
+      background-color: var(--danger);
+    }
+    
+    .stat-dot.pending {
+      background-color: var(--warning);
+    }
+    
+    .stat-dot.resolved {
+      background-color: var(--success);
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+    
+    .stat-value {
+      margin-left: auto;
+      font-weight: 600;
+      color: var(--dark);
+    }
+    
+    .map-legend h4 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: var(--dark);
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    
+    .legend-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 10px;
+      color: var(--dark);
+    }
+    
+    .legend-label {
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+    
+    /* Map Controls */
+    .map-controls {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    
+    .control-pill {
+      border-radius: 50px;
+      background-color: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      padding: 0.5rem 0;
+      display: flex;
+      overflow: hidden;
+    }
+    
+    .control-button {
+      border: none;
+      background: none;
+      padding: 0.5rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--gray);
+    }
+    
+    .control-button.active {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .control-button:hover:not(.active) {
+      color: var(--dark);
+    }
+    
+    /* Map Info Section */
+    .map-info-section {
+      background-color: white;
+      padding: 5rem 0;
+    }
+    
+    .section-title {
+      text-align: center;
+      margin-bottom: 4rem;
+      position: relative;
+    }
+    
+    .section-title h2 {
+      font-size: 2.5rem;
+      color: var(--dark);
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .section-title p {
+      max-width: 700px;
+      margin: 0 auto;
+      color: var(--gray);
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    
+    .info-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      height: 100%;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    .info-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    
+    .info-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    
+    .info-content {
+      padding: 1.8rem;
+    }
+    
+    .info-content h3 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    
+    .info-content p {
+      color: var(--gray);
+      line-height: 1.6;
+    }
+    
+    .info-icon {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      background-color: rgba(58, 134, 255, 0.1);
+      color: var(--primary);
+    }
+    
+    /* Custom Popup Styling */
+    .custom-popup .leaflet-popup-content-wrapper {
+      border-radius: 10px;
+      overflow: hidden;
+      padding: 0;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .custom-popup .leaflet-popup-content {
+      margin: 0;
+      padding: 0;
+      width: 280px !important;
+    }
+    
+    .popup-header {
+      padding: 0.75rem 1rem;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .popup-header.critical {
+      background-color: var(--danger);
+    }
+    
+    .popup-header.pending {
+      background-color: var(--warning);
+    }
+    
+    .popup-header.resolved {
+      background-color: var(--success);
+    }
+    
+    .popup-content {
+      padding: 1rem;
+    }
+    
+    .popup-content p {
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .popup-content strong {
+      font-weight: 600;
+      color: var(--dark);
+    }
+    
+    .popup-footer {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid #eee;
+      background-color: #f9f9f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .popup-footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .popup-footer a i {
+      margin-left: 0.5rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .popup-footer a:hover i {
+      transform: translateX(3px);
+    }
+    
+    .popup-date {
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--dark);
+      color: white;
+      padding: 5rem 0 2rem;
+    }
+    
+    .footer-logo {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .footer-logo span {
+      color: var(--primary);
+    }
+    
+    .footer-about {
+      margin-bottom: 2rem;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.7;
+    }
+    
+    .footer-heading {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      padding-bottom: 0.8rem;
+    }
+    
+    .footer-heading::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background: var(--primary);
+    }
+    
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .footer-links li {
+      margin-bottom: 0.8rem;
+    }
+    
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+      color: var(--primary);
+      padding-left: 5px;
+    }
+    
+    .footer-contact-item {
+      display: flex;
+      margin-bottom: 1rem;
+    }
+    
+    .footer-contact-icon {
+      margin-right: 1rem;
+      color: var(--primary);
+    }
+    
+    .footer-contact-text {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .social-icons {
+      display: flex;
+      margin-top: 1.5rem;
+    }
+    
+    .social-icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      margin-right: 1rem;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    
+    .social-icon:hover {
+      background-color: var(--primary);
+      transform: translateY(-5px);
+    }
+    
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 2rem;
+      margin-top: 4rem;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    /* Back to Top Button */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .back-to-top.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .back-to-top:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-5px);
+      color: white;
+    }
+    
+    /* Animation Classes */
+    .fade-in {
+      animation: fadeIn 1s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Custom Marker Animations */
+    @keyframes pulsate {
+      0% { transform: scale(0.8); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(0.8); opacity: 0.8; }
+    }
+    
+    .pulse-marker {
+      animation: pulsate 1.5s ease-in-out infinite;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+      .hero h1 {
+        font-size: 2.8rem;
+      }
+      
+      .section-title h2 {
+        font-size: 2rem;
+      }
+      
+      .map-container {
+        height: 600px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .hero {
+        padding: 7rem 1rem 3rem;
+      }
+      
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+      
+      .hero p {
+        font-size: 1rem;
+      }
+      
+      .navbar-toggler {
+        border: none;
+      }
+      
+      .navbar-toggler:focus {
+        box-shadow: none;
+      }
+      
+      .map-container {
+        height: 500px;
+        width: 95%;
+      }
+      
+      .map-overlay {
+        top: auto;
+        bottom: 20px;
+        right: 10px;
+        max-width: 200px;
+      }
+      
+      .info-card {
+        margin-bottom: 2rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .hero h1 {
+        font-size: 1.8rem;
+      }
+      
+      .section-title h2 {
+        font-size: 1.7rem;
+      }
+      
+      .map-container {
+        height: 400px;
+        width: 100%;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+      }
+      
+      .map-overlay {
+        display: none;
+      }
+      
+      .map-controls {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .control-pill {
+        margin-bottom: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">Disaster<span>Relief</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/reports">Reports</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/livemap">Live Map</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/donate">Donate</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/media">Media</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content" data-aos="fade-up" data-aos-duration="1000">
+      <h1>Live Disaster Monitoring</h1>
+      <p>View real-time disaster reports and alerts plotted across affected regions. Stay informed about critical situations, pending assessments, and resolved incidents throughout the country.</p>
+    </div>
+  </section>
+
+  <!-- Map Controls Section -->
+  <section class="map-section">
+    <div class="container">
+      <div class="map-controls" data-aos="fade-up">
+        <div class="control-pill">
+          <button class="control-button active" id="view-all">All Disasters</button>
+          <button class="control-button" id="view-critical">Critical</button>
+          <button class="control-button" id="view-pending">Pending</button>
+          <button class="control-button" id="view-resolved">Resolved</button>
+        </div>
+      </div>
+      
+      <div class="map-container" data-aos="fade-up">
+        <div id="map"></div>
+        
+        <div class="map-overlay">
+          <div class="map-stats">
+            <h4>Disaster Status</h4>
+            <div class="stat-item">
+              <div class="stat-dot critical"></div>
+              <span class="stat-label">Critical</span>
+              <span class="stat-value" id="critical-count">0</span>
+            </div>
+            <div class="stat-item">
+              <div class="stat-dot pending"></div>
+              <span class="stat-label">Pending</span>
+              <span class="stat-value" id="pending-count">0</span>
+            </div>
+            <div class="stat-item">
+              <div class="stat-dot resolved"></div>
+              <span class="stat-label">Resolved</span>
+              <span class="stat-value" id="resolved-count">0</span>
+            </div>
+          </div>
+          
+          <div class="map-legend">
+            <h4>Disaster Types</h4>
+            <div class="legend-item">
+              <div class="legend-icon"><i class="fas fa-water"></i></div>
+              <span class="legend-label">Flood</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-icon"><i class="fas fa-globe-asia"></i></div>
+              <span class="legend-label">Earthquake</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-icon"><i class="fas fa-fire"></i></div>
+              <span class="legend-label">Wildfire</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-icon"><i class="fas fa-mountain"></i></div>
+              <span class="legend-label">Landslide</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-icon"><i class="fas fa-wind"></i></div>
+              <span class="legend-label">Cyclone</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Map Info Section -->
+  <section class="map-info-section">
+    <div class="container">
+      <div class="section-title" data-aos="fade-up">
+        <h2>Understanding Disaster Response</h2>
+        <p>Our mapping system provides critical information for disaster management and response coordination.</p>
+      </div>
+      
+      <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="info-card text-center">
+            <div class="info-content">
+              <div class="info-icon">
+                <i class="fas fa-map-marked-alt"></i>
+              </div>
+              <h3>Real-time Monitoring</h3>
+              <p>Our live map shows real-time disaster reports from across the country, allowing quick identification of affected areas and emergency response coordination.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="info-card text-center">
+            <div class="info-content">
+              <div class="info-icon">
+                <i class="fas fa-bell"></i>
+              </div>
+              <h3>Alert System</h3>
+              <p>Get immediate notifications about disasters in your area through our integrated alert system, helping communities prepare and respond appropriately.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+          <div class="info-card text-center">
+            <div class="info-content">
+              <div class="info-icon">
+                <i class="fas fa-hands-helping"></i>
+              </div>
+              <h3>Resource Allocation</h3>
+              <p>Visualize where resources are needed most, helping authorities and donors direct aid efficiently to the most affected communities.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 mb-5 mb-lg-0">
+          <div class="footer-logo">आपदा<span>रक्षक</span></div>
+          <p class="footer-about">Our mission is to provide efficient disaster management solutions that connect those in need with those who can help, saving lives and rebuilding communities.</p>
+          <div class="social-icons">
+            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-6 mb-5 mb-md-0">
+          <h4 class="footer-heading">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="/"><i class="fas fa-angle-right me-2"></i>Home</a></li>
+            <li><a href="/reports"><i class="fas fa-angle-right me-2"></i>Reports</a></li>
+            <li><a href="/livemap"><i class="fas fa-angle-right me-2"></i>Live Map</a></li>
+            <li><a href="/donate"><i class="fas fa-angle-right me-2"></i>Donate</a></li>
+            <li><a href="/media"><i class="fas fa-angle-right me-2"></i>Media</a></li>
+          </ul>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-5 mb-md-0">
+          <h4 class="footer-heading">Disaster Types</h4>
+          <ul class="footer-links">
+            <li><a href="#"><i class="fas fa-angle-right me-2"></i>Floods</a></li>
+            <li><a href="#"><i class="fas fa-angle-right me-2"></i>Earthquakes</a></li>
+            <li><a href="#"><i class="fas fa-angle-right me-2"></i>Wildfires</a></li>
+            <li><a href="#"><i class="fas fa-angle-right me-2"></i>Cyclones</a></li>
+            <li><a href="#"><i class="fas fa-angle-right me-2"></i>Landslides</a></li>
+          </ul>
+        </div>
+        
+        <div class="col-lg-3 col-md-6">
+          <h4 class="footer-heading">Contact Us</h4>
+          <div class="footer-contact-item">
+            <div class="footer-contact-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="footer-contact-text">
+              123 Relief Road, Mumbai, India
+            </div>
+          </div>
+          <div class="footer-contact-item">
+            <div class="footer-contact-icon">
+              <i class="fas fa-phone-alt"></i>
+            </div>
+            <div class="footer-contact-text">
+              +91 1234567890
+            </div>
+          </div>
+          <div class="footer-contact-item">
+            <div class="footer-contact-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div class="footer-contact-text">
+              info@apadarakshak.org
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 Disaster Management Team. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top Button -->
+  <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- AOS Animation Library -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  
+  <script>
+    // Initialize AOS animation
+    AOS.init({
+      once: true
+    });
+    
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('.navbar');
+      if (window.scrollY > 50) {
+        navbar.classList.add('navbar-scrolled');
+      } else {
+        navbar.classList.remove('navbar-scrolled');
+      }
+      
+      // Back to top button visibility
+      const backToTop = document.querySelector('.back-to-top');
+      if (window.scrollY > 300) {
+        backToTop.classList.add('active');
+      } else {
+        backToTop.classList.remove('active');
+      }
+    });
+
+    // Initialize Leaflet map
+    const map = L.map("map").setView([20.5937, 78.9629], 5); // India center
+
+    // Add custom tile layer
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(map);
+    
+    // Custom marker icons based on status
+    const createCustomIcon = (status) => {
+      const iconUrl = status === 'critical' ? 
+                      'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png' :
+                      status === 'pending' ? 
+                      'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png' :
+                      'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png';
+                      
+      return L.icon({
+        iconUrl: iconUrl,
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+    };
+    
+    // Disaster type icons mapping
+    const disasterIcons = {
+      'Flood': 'fas fa-water',
+      'Earthquake': 'fas fa-globe-asia',
+      'Wildfire': 'fas fa-fire',
+      'Landslide': 'fas fa-mountain',
+      'Cyclone': 'fas fa-wind',
+      'Tsunami': 'fas fa-water',
+      'Drought': 'fas fa-sun',
+      'Heatwave': 'fas fa-temperature-high',
+      'Thunderstorm': 'fas fa-bolt',
+      'Volcanic Eruption': 'fas fa-volcano',
+      'default': 'fas fa-exclamation-triangle'
+    };
+    
+    // Function to get appropriate icon for disaster type
+    const getDisasterIcon = (type) => {
+      return disasterIcons[type] || disasterIcons.default;
+    };
+    
+    // Store all markers in layer groups by status
+    let allMarkers = [];
+    let criticalMarkers = L.layerGroup();
+    let pendingMarkers = L.layerGroup();
+    let resolvedMarkers = L.layerGroup();
+    
+    // Add all layer groups to map initially
+    criticalMarkers.addTo(map);
+    pendingMarkers.addTo(map);
+    resolvedMarkers.addTo(map);
+    
+    // Counter variables for statistics
+    let criticalCount = 0;
+    let pendingCount = 0;
+    let resolvedCount = 0;
+    
+    // Fetch reports from backend and add markers
+    fetch("/api/reports")
+      .then((res) => res.json())
+      .then((reports) => {
+        reports.forEach((report) => {
+          if (report.location && report.location.lat && report.location.lng) {
+            // Create custom popup
+            const popupContent = `
+              <div class="custom-popup">
+                <div class="popup-header ${report.status}">
+                  <i class="${getDisasterIcon(report.disasterType)} me-2"></i> ${report.disasterType}
+                </div>
+                <div class="popup-content">
+                  <p><strong>Name:</strong> ${report.name}</p>
+                  <p><strong>Message:</strong> ${report.message || "No message"}</p>
+                  <p><strong>Status:</strong> ${report.status.charAt(0).toUpperCase() + report.status.slice(1)}</p>
+                </div>
+                <div class="popup-footer">
+                  <span class="popup-date">${new Date(report.createdAt).toLocaleDateString()}</span>
+                  <a href="/reports/${report._id}">Details <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </div>
+            `;
+            
+            // Create marker with custom icon
+            const marker = L.marker([report.location.lat, report.location.lng], {
+              icon: createCustomIcon(report.status)
+            }).bindPopup(popupContent);
+            
+            // Add marker to appropriate layer group
+            if (report.status === 'critical') {
+              marker.addTo(criticalMarkers);
+              criticalCount++;
+            } else if (report.status === 'pending') {
+              marker.addTo(pendingMarkers);
+              pendingCount++;
+            } else if (report.status === 'resolved') {
+              marker.addTo(resolvedMarkers);
+              resolvedCount++;
+            }
+            
+            // Store marker in array
+            allMarkers.push(marker);
+          }
+        });
+        
+        // Update counters in UI
+        document.getElementById('critical-count').textContent = criticalCount;
+        document.getElementById('pending-count').textContent = pendingCount;
+        document.getElementById('resolved-count').textContent = resolvedCount;
+      })
+      .catch((err) => {
+        console.error("Failed to load reports:", err);
+      });
+    
+    // Filter buttons event listeners
+    document.getElementById('view-all').addEventListener('click', function() {
+      setActiveButton(this);
+      map.addLayer(criticalMarkers);
+      map.addLayer(pendingMarkers);
+      map.addLayer(resolvedMarkers);
+    });
+    
+    document.getElementById('view-critical').addEventListener('click', function() {
+      setActiveButton(this);
+      map.addLayer(criticalMarkers);
+      map.removeLayer(pendingMarkers);
+      map.removeLayer(resolvedMarkers);
+    });
+    
+    document.getElementById('view-pending').addEventListener('click', function() {
+      setActiveButton(this);
+      map.removeLayer(criticalMarkers);
+      map.addLayer(pendingMarkers);
+      map.removeLayer(resolvedMarkers);
+    });
+    
+    document.getElementById('view-resolved').addEventListener('click', function() {
+      setActiveButton(this);
+      map.removeLayer(criticalMarkers);
+      map.removeLayer(pendingMarkers);
+      map.addLayer(resolvedMarkers);
+    });
+    
+    // Helper function to set active button
+    function setActiveButton(activeButton) {
+      document.querySelectorAll('.control-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      activeButton.classList.add('active');
+    }
+    
+    // Back to top button functionality
+    document.querySelector('.back-to-top').addEventListener('click', function(e) {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  </script>
+</body>
+</html>

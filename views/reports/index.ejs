@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disaster Reports</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #3a86ff;
+      --primary-light: rgba(58, 134, 255, 0.1);
+      --primary-dark: #2667cc;
+      --secondary: #ff006e;
+      --dark: #343a40;
+      --light: #f8f9fa;
+      --warning: #ffbe0b;
+      --danger: #fb5607;
+      --success: #06d6a0;
+      --gray: #8d99ae;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fa;
+      color: #333;
+      position: relative;
+      min-height: 100vh;
+    }
+    
+    /* Background Overlay */
+    .page-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2075&q=80');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.04;
+      z-index: -1;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-dark);
+    }
+    
+    /* Navbar Styling */
+    .navbar {
+      background-color: var(--dark);
+      padding: 0.8rem 1.5rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .navbar-brand {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: white !important;
+    }
+    
+    .navbar-brand span {
+      color: var(--primary);
+    }
+    
+    .nav-link {
+      color: rgba(255, 255, 255, 0.85) !important;
+      font-weight: 500;
+      margin: 0 0.5rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+      color: white !important;
+    }
+    
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--primary);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    
+    .nav-link.active {
+      color: white !important;
+      font-weight: 600;
+    }
+    
+    .nav-link.active::after {
+      width: 100%;
+    }
+    
+    .user-welcome {
+      color: white;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+    }
+    
+    .user-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      margin-right: 0.5rem;
+      font-size: 0.8rem;
+      color: white;
+    }
+    
+    /* Page Header */
+    .page-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 3.5rem 0;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 3rem;
+    }
+    
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+      transform: rotate(30deg);
+    }
+    
+    .header-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .page-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .page-subtitle {
+      font-weight: 300;
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0;
+      opacity: 0.9;
+    }
+    
+    .current-time {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .current-time i {
+      margin-right: 0.5rem;
+    }
+    
+    /* Create New Report Button */
+    .btn-create {
+      padding: 0.8rem 1.5rem;
+      background: white;
+      color: var(--primary);
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      display: inline-flex;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-create:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      color: var(--primary-dark);
+    }
+    
+    .btn-create i {
+      margin-right: 0.7rem;
+      font-size: 0.9rem;
+    }
+    
+    /* Filters Section */
+    .filters-container {
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+    
+    .filters-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .filters-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: var(--dark);
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+    
+    .filters-title i {
+      margin-right: 0.7rem;
+      color: var(--primary);
+    }
+    
+    .show-count {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+    
+    .filter-pills {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+    
+    .filter-pill {
+      padding: 0.7rem 1.2rem;
+      background-color: white;
+      color: var(--dark);
+      border-radius: 10px;
+      font-weight: 500;
+      text-decoration: none;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .filter-pill i {
+      margin-right: 0.7rem;
+      font-size: 0.9rem;
+    }
+    
+    .filter-pill:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      color: var(--primary);
+    }
+    
+    .filter-pill.active {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    /* Alert Styling */
+    .alert {
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .alert-success {
+      background-color: rgba(6, 214, 160, 0.1);
+      border-left: 4px solid var(--success);
+      color: #155724;
+    }
+    
+    .alert-icon {
+      margin-right: 1rem;
+      font-size: 1.2rem;
+      color: var(--success);
+    }
+    
+    /* Reports Grid */
+    .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.8rem;
+      margin-bottom: 3rem;
+    }
+    
+    /* Report Card */
+    .report-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .report-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .report-header {
+      position: relative;
+      height: 140px;
+      overflow: hidden;
+    }
+    
+    .report-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: all 0.3s ease;
+    }
+    
+    .report-card:hover .report-image {
+      transform: scale(1.1);
+    }
+    
+    .report-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.6));
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.2rem;
+    }
+    
+    .disaster-type {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: var(--dark);
+      padding: 0.3rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .disaster-type i {
+      margin-right: 0.4rem;
+      color: var(--primary);
+    }
+    
+    /* Status Badge Styling */
+    .status-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.3rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .status-badge i {
+      margin-right: 0.4rem;
+      font-size: 0.7rem;
+    }
+    
+    .status-pending {
+      background-color: rgba(255, 190, 11, 0.9);
+      color: #856404;
+    }
+    
+    .status-critical {
+      background-color: rgba(251, 86, 7, 0.9);
+      color: white;
+    }
+    
+    .status-resolved {
+      background-color: rgba(6, 214, 160, 0.9);
+      color: white;
+    }
+    
+    .report-content {
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .report-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 1.3rem;
+      margin: 0 0 1rem;
+      color: var(--dark);
+      line-height: 1.3;
+    }
+    
+    .report-meta {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+    
+    .report-meta i {
+      margin-right: 0.5rem;
+      color: var(--primary);
+    }
+    
+    .report-meta-divider {
+      margin: 0 0.7rem;
+      color: #ddd;
+    }
+    
+    /* Need Badges */
+    .needs-container {
+      margin-top: auto;
+      padding-top: 1rem;
+    }
+    
+    .needs-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 0.7rem;
+    }
+    
+    .needs-badge i {
+      margin-right: 0.4rem;
+    }
+    
+    .has-needs {
+      background-color: rgba(251, 86, 7, 0.1);
+      color: var(--danger);
+    }
+    
+    .fulfilled {
+      background-color: rgba(6, 214, 160, 0.1);
+      color: var(--success);
+    }
+    
+    .needs-summary {
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-bottom: 1rem;
+    }
+    
+    /* Card Footer */
+    .report-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 0.8rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .view-details {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+    
+    .view-details i {
+      margin-left: 0.4rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .view-details:hover {
+      color: var(--primary-dark);
+    }
+    
+    .view-details:hover i {
+      transform: translateX(3px);
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 5rem 2rem;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    }
+    
+    .empty-icon {
+      font-size: 4rem;
+      color: #ddd;
+      margin-bottom: 1.5rem;
+    }
+    
+    .empty-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: var(--dark);
+    }
+    
+    .empty-message {
+      color: var(--gray);
+      max-width: 500px;
+      margin: 0 auto 2rem;
+    }
+    
+    /* Responsive Styling */
+    @media (max-width: 992px) {
+      .reports-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      }
+      
+      .page-title {
+        font-size: 2rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .reports-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      }
+      
+      .page-title {
+        font-size: 1.8rem;
+      }
+      
+      .current-time {
+        display: none;
+      }
+      
+      .report-header {
+        height: 120px;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .reports-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .filters-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+      }
+      
+      .page-title {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-background"></div>
+  
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">Disaster<span>Relief</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/reports">Reports</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/media">Media</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/livemap">Live Map</a>
+          </li>
+          <% if(currentUser && currentUser.userType === 'donor') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/donor/dashboard">My Dashboard</a>
+            </li>
+          <% } else if(currentUser && currentUser.userType === 'admin') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin">Admin</a>
+            </li>
+          <% } %>
+        </ul>
+        <div class="user-welcome">
+          <% if(currentUser) { %>
+            <div class="user-avatar">
+              <%= currentUser.name ? currentUser.name.charAt(0) : currentUser.username.charAt(0) %>
+            </div>
+            Welcome, <%= currentUser.name || currentUser.username %> |
+            <a href="/logout" class="nav-link ms-2">Logout</a>
+          <% } else { %>
+            <a href="/login" class="nav-link">Login</a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Header Section -->
+  <header class="page-header">
+    <div class="container">
+      <div class="header-content">
+        <div>
+          <h1 class="page-title" data-aos="fade-up">Disaster Reports</h1>
+          <p class="page-subtitle" data-aos="fade-up" data-aos-delay="100">
+            View and manage disaster reports from across the country
+          </p>
+        </div>
+        <a href="/reports/new" class="btn-create" data-aos="fade-left">
+          <i class="fas fa-plus-circle"></i> New Report
+        </a>
+      </div>
+      <div class="current-time">
+        <i class="far fa-clock"></i> 2025-04-20 19:13:45 UTC
+      </div>
+    </div>
+  </header>
+  
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Success Message -->
+    <% if(success && success.length) { %>
+      <div class="alert alert-success" data-aos="fade-up">
+        <div class="alert-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div><%= success %></div>
+      </div>
+    <% } %>
+    
+    <!-- Filters Section -->
+    <div class="filters-container" data-aos="fade-up">
+      <div class="filters-header">
+        <h3 class="filters-title">
+          <i class="fas fa-filter"></i> Filter Reports
+        </h3>
+        <div class="show-count">
+          Showing <strong><%= allReports.length %></strong> reports
+        </div>
+      </div>
+      
+      <div class="filter-pills">
+        <a href="/reports" class="filter-pill <%= filter === 'all' ? 'active' : '' %>">
+          <i class="fas fa-globe"></i> All Reports
+        </a>
+        <a href="/reports?filter=needs" class="filter-pill <%= filter === 'needs' ? 'active' : '' %>">
+          <i class="fas fa-hands-helping"></i> Resources Needed
+        </a>
+        <a href="/reports?filter=fulfilled" class="filter-pill <%= filter === 'fulfilled' ? 'active' : '' %>">
+          <i class="fas fa-check-circle"></i> All Needs Fulfilled
+        </a>
+      </div>
+    </div>
+    
+    <!-- Reports Grid -->
+    <% if (allReports.length > 0) { %>
+      <div class="reports-grid">
+        <% allReports.forEach((report, index) => { 
+          // Helper function to check if report has unfulfilled requirements
+          function hasUnfulfilledRequirements(report) {
+            if (!report.requirements) return false;
+            
+            const r = report.requirements;
+            
+            return (
+              (r.food?.needed && (r.food.remainingNeeded > 0 || !r.food.fulfilled)) ||
+              (r.water?.needed && (r.water.remainingNeeded > 0 || !r.water.fulfilled)) ||
+              (r.medicine?.needed && (r.medicine.remainingNeeded > 0 || !r.medicine.fulfilled)) ||
+              (r.clothing?.needed && (r.clothing.remainingNeeded > 0 || !r.clothing.fulfilled)) ||
+              (r.shelter?.needed && (r.shelter.remainingNeeded > 0 || !r.shelter.fulfilled)) ||
+              (r.volunteers?.needed && (r.volunteers.remainingNeeded > 0 || !r.volunteers.fulfilled)) ||
+              (r.other?.needed && !r.other.fulfilled)
+            );
+          }
+          
+          const needsResources = hasUnfulfilledRequirements(report);
+          
+          // Count how many different requirements are needed
+          let requirementsCount = 0;
+          if (report.requirements) {
+            const r = report.requirements;
+            if (r.food?.needed) requirementsCount++;
+            if (r.water?.needed) requirementsCount++;
+            if (r.medicine?.needed) requirementsCount++;
+            if (r.clothing?.needed) requirementsCount++;
+            if (r.shelter?.needed) requirementsCount++;
+            if (r.volunteers?.needed) requirementsCount++;
+            if (r.other?.needed) requirementsCount++;
+          }
+          
+          // Get relevant image based on disaster type
+          let disasterImage = '';
+          let disasterIcon = 'fas fa-exclamation-triangle';
+          
+          switch(report.disasterType.toLowerCase()) {
+            case 'earthquake':
+              disasterImage = 'https://images.unsplash.com/photo-1600096194534-95cf5ece04cf?q=80&w=2070&auto=format&fit=crop';
+              disasterIcon = 'fas fa-globe-asia';
+              break;
+            case 'flood':
+              disasterImage = 'https://images.unsplash.com/photo-1547683905-f686c993aae5?q=80&w=2080&auto=format&fit=crop';
+              disasterIcon = 'fas fa-water';
+              break;
+            case 'cyclone':
+              disasterImage = 'https://images.unsplash.com/photo-1614088685112-0a760b71a3c8?q=80&w=2060&auto=format&fit=crop';
+              disasterIcon = 'fas fa-wind';
+              break;
+            case 'landslide':
+              disasterImage = 'https://images.unsplash.com/photo-1572006234180-e5c857188799?q=80&w=2070&auto=format&fit=crop';
+              disasterIcon = 'fas fa-mountain';
+              break;
+            case 'wildfire':
+              disasterImage = 'https://images.unsplash.com/photo-1599171571332-ec21be9a3818?q=80&w=2070&auto=format&fit=crop';
+              disasterIcon = 'fas fa-fire';
+              break;
+            case 'tsunami':
+              disasterImage = 'https://images.unsplash.com/photo-1580220224876-61f7bd246696?q=80&w=2069&auto=format&fit=crop';
+              disasterIcon = 'fas fa-water';
+              break;
+            case 'drought':
+              disasterImage = 'https://images.unsplash.com/photo-1594412017492-0b27f1da93df?q=80&w=2070&auto=format&fit=crop';
+              disasterIcon = 'fas fa-sun';
+              break;
+            case 'volcanic eruption':
+              disasterImage = 'https://images.unsplash.com/photo-1529642770731-94d188d127f4?q=80&w=2070&auto=format&fit=crop';
+              disasterIcon = 'fas fa-mountain';
+              break;
+            case 'thunderstorm':
+              disasterImage = 'https://images.unsplash.com/photo-1429552077091-836152271555?q=80&w=2072&auto=format&fit=crop';
+              disasterIcon = 'fas fa-bolt';
+              break;
+            case 'heatwave':
+              disasterImage = 'https://images.unsplash.com/photo-1495933925743-bb94d1d4ea4c?q=80&w=2070&auto=format&fit=crop';
+              disasterIcon = 'fas fa-temperature-high';
+              break;
+            default:
+              disasterImage = 'https://images.unsplash.com/photo-1582620021506-9f92cf328dfa?q=80&w=2070&auto=format&fit=crop';
+          }
+        %>
+          <div class="report-card" data-aos="fade-up" data-aos-delay="<%= index * 50 %>">
+            <div class="report-header">
+              <img src="<%= disasterImage %>" alt="<%= report.disasterType %>" class="report-image">
+              <div class="report-overlay">
+                <span class="disaster-type">
+                  <i class="<%= disasterIcon %>"></i> <%= report.disasterType %>
+                </span>
+                <span class="status-badge status-<%= report.status %>">
+                  <% if(report.status === 'pending') { %>
+                    <i class="fas fa-clock"></i>
+                  <% } else if(report.status === 'critical') { %>
+                    <i class="fas fa-exclamation-triangle"></i>
+                  <% } else if(report.status === 'resolved') { %>
+                    <i class="fas fa-check-circle"></i>
+                  <% } %>
+                  <%= report.status.charAt(0).toUpperCase() + report.status.slice(1) %>
+                </span>
+              </div>
+            </div>
+            
+            <div class="report-content">
+              <h3 class="report-title"><%= report.name %></h3>
+              
+              <div class="report-meta">
+                <i class="far fa-calendar-alt"></i>
+                <span><%= new Date(report.createdAt).toLocaleDateString() %></span>
+                <span class="report-meta-divider">|</span>
+                <i class="far fa-clock"></i>
+                <span><%= new Date(report.createdAt).toLocaleTimeString() %></span>
+              </div>
+              
+              <% if (report.message && report.message.length > 0) { %>
+                <p class="report-message text-truncate">
+                  <%= report.message.length > 80 ? report.message.substring(0, 80) + '...' : report.message %>
+                </p>
+              <% } %>
+              
+              <div class="needs-container">
+                <% if (requirementsCount > 0) { %>
+                  <% if (needsResources) { %>
+                    <div class="needs-badge has-needs">
+                      <i class="fas fa-exclamation-circle"></i> Resources Needed
+                    </div>
+                  <% } else { %>
+                    <div class="needs-badge fulfilled">
+                      <i class="fas fa-check-circle"></i> All Needs Fulfilled
+                    </div>
+                  <% } %>
+                  <p class="needs-summary">
+                    <%= requirementsCount %> requirement <%= requirementsCount === 1 ? 'type' : 'types' %> requested
+                  </p>
+                <% } %>
+                
+                <div class="report-footer">
+                  <a href="/reports/<%= report._id %>" class="view-details">
+                    View Details <i class="fas fa-chevron-right"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty-state" data-aos="fade-up">
+        <div class="empty-icon">
+          <i class="fas fa-search"></i>
+        </div>
+        <h2 class="empty-title">No Reports Found</h2>
+        <p class="empty-message">There are currently no disaster reports matching your filter criteria. Try changing your filters or check back later.</p>
+        <a href="/reports/new" class="btn-create">
+          <i class="fas fa-plus-circle"></i> Create New Report
+        </a>
+      </div>
+    <% } %>
+  </div>
+  
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- AOS Animation Library -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  
+  <script>
+    // Initialize AOS animation
+    AOS.init({
+      once: true,
+      duration: 800
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donate Resources - Disaster Management</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #3a86ff;
+      --primary-light: rgba(58, 134, 255, 0.1);
+      --primary-dark: #2667cc;
+      --secondary: #ff006e;
+      --dark: #2f3542;
+      --light: #f8f9fa;
+      --warning: #ffbe0b;
+      --danger: #fb5607;
+      --success: #06d6a0;
+      --gray: #8d99ae;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fa;
+      color: #333;
+      position: relative;
+      min-height: 100vh;
+    }
+    
+    /* Navbar Styling */
+    .navbar {
+      background-color: var(--dark);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 0.8rem 1.5rem;
+    }
+    
+    .navbar-brand {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: white !important;
+    }
+    
+    .navbar-brand span {
+      color: var(--primary);
+    }
+    
+    .nav-link {
+      color: rgba(255, 255, 255, 0.85) !important;
+      font-weight: 500;
+      margin: 0 0.5rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+      color: white !important;
+    }
+    
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--primary);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    
+    .nav-link.active {
+      color: white !important;
+      font-weight: 600;
+    }
+    
+    .nav-link.active::after {
+      width: 100%;
+    }
+    
+    .user-welcome {
+      color: white;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+    }
+    
+    .user-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      margin-right: 0.5rem;
+      font-size: 0.8rem;
+      color: white;
+    }
+    
+    /* Main Container */
+    .page-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+    
+    /* Background Overlay */
+    .page-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('https://images.unsplash.com/photo-1617787503709-fa232b8463a2?q=80&w=2070&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.05;
+      z-index: -1;
+    }
+    
+    /* Donation Card */
+    .donate-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      position: relative;
+    }
+    
+    .donate-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 2rem 2.5rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .donate-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+      transform: rotate(30deg);
+    }
+    
+    .donate-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 2rem;
+      margin: 0;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .donate-title i {
+      margin-right: 0.8rem;
+      background-color: rgba(255, 255, 255, 0.2);
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .donate-content {
+      padding: 2.5rem;
+    }
+    
+    /* Report Info Card */
+    .report-info {
+      background-color: var(--light);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.03);
+      border-left: 4px solid var(--primary);
+    }
+    
+    .report-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 1.4rem;
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .report-status {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .status-pending {
+      background-color: rgba(255, 190, 11, 0.15);
+      color: #856404;
+    }
+    
+    .status-critical {
+      background-color: rgba(251, 86, 7, 0.15);
+      color: #721c24;
+    }
+    
+    .status-resolved {
+      background-color: rgba(6, 214, 160, 0.15);
+      color: #155724;
+    }
+    
+    .report-detail {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.7rem;
+      font-size: 0.95rem;
+    }
+    
+    .report-detail:last-child {
+      margin-bottom: 0;
+    }
+    
+    .report-detail i {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 0.8rem;
+      font-size: 0.9rem;
+    }
+    
+    .report-detail strong {
+      margin-right: 0.5rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+    
+    /* Section Title */
+    .section-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--dark);
+      margin-bottom: 1.2rem;
+      position: relative;
+      padding-left: 1rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .section-title::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background-color: var(--primary);
+      border-radius: 4px;
+    }
+    
+    /* Requirements List */
+    .requirements-list {
+      background-color: var(--light);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.03);
+    }
+    
+    .requirement-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px dashed rgba(0,0,0,0.07);
+    }
+    
+    .requirement-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    
+    .requirement-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background-color: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+    
+    .requirement-info {
+      flex: 1;
+    }
+    
+    .requirement-name {
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 0.4rem;
+    }
+    
+    .requirement-progress {
+      height: 8px;
+      background-color: #e9ecef;
+      border-radius: 50px;
+      overflow: hidden;
+      margin-bottom: 0.4rem;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      border-radius: 50px;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+    }
+    
+    .requirement-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+    
+    .requirement-count {
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    /* Form Styling */
+    .form-section {
+      margin-top: 2rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      font-size: 1rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.1);
+    }
+    
+    .form-select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%233a86ff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 16px 12px;
+    }
+    
+    .form-hint {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+    
+    /* Alert Styling */
+    .alert {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: flex-start;
+    }
+    
+    .alert-danger {
+      background-color: rgba(251, 86, 7, 0.1);
+      border-left: 4px solid var(--danger);
+      color: #721c24;
+    }
+    
+    .alert-icon {
+      margin-right: 1rem;
+      font-size: 1.2rem;
+    }
+    
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn i {
+      margin-right: 0.5rem;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(58, 134, 255, 0.2);
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-dark) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(58, 134, 255, 0.3);
+    }
+    
+    .btn-secondary {
+      background-color: #e9ecef;
+      color: var(--dark);
+    }
+    
+    .btn-secondary:hover {
+      background-color: #dee2e6;
+      color: var(--dark);
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    /* Animation Classes */
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .donate-header {
+        padding: 2rem 1.5rem;
+      }
+      
+      .donate-content {
+        padding: 1.5rem;
+      }
+      
+      .donate-title {
+        font-size: 1.6rem;
+      }
+      
+      .report-title {
+        font-size: 1.2rem;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .report-status {
+        margin-top: 0.5rem;
+        margin-left: 0;
+      }
+      
+      .requirement-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .requirement-icon {
+        margin-bottom: 0.5rem;
+      }
+      
+      .requirement-info {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-background"></div>
+  
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="/">Disaster<span>Relief</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/reports">Reports</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/media">Media</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/livemap">Live Map</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/donor/dashboard">My Dashboard</a>
+          </li>
+        </ul>
+        <div class="user-welcome">
+          <% if(currentUser) { %>
+            <div class="user-avatar">
+              <%= currentUser.name ? currentUser.name.charAt(0) : currentUser.username.charAt(0) %>
+            </div>
+            Welcome, <%= currentUser.name || currentUser.username %> |
+            <a href="/logout" class="nav-link ms-2">Logout</a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <div class="page-container">
+    <div class="donate-card fade-in">
+      <!-- Header -->
+      <div class="donate-header">
+        <h1 class="donate-title">
+          <i class="fas fa-hand-holding-heart"></i>
+          Donate Resources
+        </h1>
+      </div>
+      
+      <!-- Content -->
+      <div class="donate-content">
+        <% if(error && error.length) { %>
+          <div class="alert alert-danger">
+            <div class="alert-icon">
+              <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div><%= error %></div>
+          </div>
+        <% } %>
+        
+        <!-- Report Info -->
+        <div class="report-info" data-aos="fade-up" data-aos-duration="800">
+          <h2 class="report-title">
+            <%= report.name %>
+            <span class="report-status status-<%= report.status %>">
+              <% if(report.status === 'pending') { %>
+                <i class="fas fa-clock me-1"></i>
+              <% } else if(report.status === 'critical') { %>
+                <i class="fas fa-exclamation-triangle me-1"></i>
+              <% } else if(report.status === 'resolved') { %>
+                <i class="fas fa-check-circle me-1"></i>
+              <% } %>
+              <%= report.status.charAt(0).toUpperCase() + report.status.slice(1) %>
+            </span>
+          </h2>
+          
+          <div class="report-detail">
+            <i class="fas fa-bolt"></i>
+            <strong>Disaster Type:</strong> <%= report.disasterType %>
+          </div>
+          
+          <div class="report-detail">
+            <i class="fas fa-map-marker-alt"></i>
+            <strong>Location:</strong> Lat <%= report.location.lat.toFixed(4) %>, Lng <%= report.location.lng.toFixed(4) %>
+          </div>
+          
+          <div class="report-detail">
+            <i class="fas fa-calendar-alt"></i>
+            <strong>Date Reported:</strong> <%= new Date(report.createdAt).toLocaleDateString() %>
+          </div>
+          
+          <div class="report-detail">
+            <i class="fas fa-clock"></i>
+            <strong>Current Time:</strong> 2025-04-20 19:00:57 UTC
+          </div>
+        </div>
+        
+        <!-- Requirements List -->
+        <h3 class="section-title" data-aos="fade-up" data-aos-duration="800">
+          <i class="fas fa-clipboard-list me-2"></i> Required Resources
+        </h3>
+        <div class="requirements-list" data-aos="fade-up" data-aos-duration="800" data-aos-delay="100">
+          <% 
+          let hasRequirements = false;
+          let requirementIcons = {
+            food: 'fas fa-utensils',
+            water: 'fas fa-tint',
+            medicine: 'fas fa-pills',
+            clothing: 'fas fa-tshirt',
+            shelter: 'fas fa-home',
+            volunteers: 'fas fa-users',
+            other: 'fas fa-box'
+          };
+          
+          let unitLabels = {
+            food: 'packs',
+            water: 'liters',
+            medicine: 'kits',
+            clothing: 'sets',
+            shelter: 'units',
+            volunteers: 'people',
+            other: 'units'
+          };
+          
+          if (report.requirements) {
+            const r = report.requirements;
+            
+            Object.entries(r).forEach(([key, value]) => {
+              if (key !== 'other' && value && value.needed && value.remainingNeeded > 0) {
+                hasRequirements = true;
+                const fulfilled = value.fulfilled || 0;
+                const total = value.quantity || 0;
+                const percentage = total > 0 ? Math.min(100, (fulfilled / total) * 100) : 0;
+                const remaining = Math.max(0, total - fulfilled);
+                const icon = requirementIcons[key] || 'fas fa-box';
+                const unit = unitLabels[key] || 'units';
+          %>
+                <div class="requirement-item">
+                  <div class="requirement-icon">
+                    <i class="<%= icon %>"></i>
+                  </div>
+                  <div class="requirement-info">
+                    <div class="requirement-name">
+                      <%= key.charAt(0).toUpperCase() + key.slice(1) %>
+                      <% if (key === 'shelter') { %> 
+                        (Temporary)
+                      <% } else if (key === 'food') { %>
+                        Supplies
+                      <% } else if (key === 'water') { %>
+                        (Clean)
+                      <% } else if (key === 'medicine') { %>
+                        Supplies
+                      <% } %>
+                    </div>
+                    <div class="requirement-progress">
+                      <div class="progress-bar" style="width: <%= percentage %>%"></div>
+                    </div>
+                    <div class="requirement-stats">
+                      <span>Progress: <%= Math.round(percentage) %>% Complete</span>
+                      <span class="requirement-count"><%= remaining %> <%= unit %> needed</span>
+                    </div>
+                  </div>
+                </div>
+          <% 
+              }
+            });
+            
+            // Handle 'other' requirement separately
+            if (r.other && r.other.needed && !r.other.fulfilled) {
+              hasRequirements = true;
+          %>
+              <div class="requirement-item">
+                <div class="requirement-icon">
+                  <i class="fas fa-box"></i>
+                </div>
+                <div class="requirement-info">
+                  <div class="requirement-name">Other Requirements</div>
+                  <p class="mb-0"><%= r.other.details %></p>
+                </div>
+              </div>
+          <% 
+            }
+          }
+          
+          if (!hasRequirements) { 
+          %>
+            <div class="text-center py-4">
+              <i class="fas fa-check-circle text-success fs-1 mb-3"></i>
+              <h5>All requirements have been fulfilled</h5>
+              <p class="text-muted mb-0">Thank you for your support!</p>
+            </div>
+          <% } %>
+        </div>
+        
+        <!-- Donation Form -->
+        <% if (hasRequirements) { %>
+          <div class="form-section" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
+            <h3 class="section-title">
+              <i class="fas fa-donate me-2"></i> Make Your Donation
+            </h3>
+            <form action="/donate/<%= report._id %>" method="POST">
+              <div class="form-group">
+                <label for="requirementType" class="form-label">What would you like to donate?</label>
+                <select id="requirementType" name="requirementType" class="form-control form-select" required>
+                  <option value="" disabled selected>-- Select a resource type --</option>
+                  <% if (report.requirements.food && report.requirements.food.needed && report.requirements.food.remainingNeeded > 0) { %>
+                    <option value="food">Food Supplies</option>
+                  <% } %>
+                  
+                  <% if (report.requirements.water && report.requirements.water.needed && report.requirements.water.remainingNeeded > 0) { %>
+                    <option value="water">Clean Water</option>
+                  <% } %>
+                  
+                  <% if (report.requirements.medicine && report.requirements.medicine.needed && report.requirements.medicine.remainingNeeded > 0) { %>
+                    <option value="medicine">Medical Supplies</option>
+                  <% } %>
+                  
+                  <% if (report.requirements.clothing && report.requirements.clothing.needed && report.requirements.clothing.remainingNeeded > 0) { %>
+                    <option value="clothing">Clothing</option>
+                  <% } %>
+                  
+                  <% if (report.requirements.shelter && report.requirements.shelter.needed && report.requirements.shelter.remainingNeeded > 0) { %>
+                    <option value="shelter">Temporary Shelter</option>
+                  <% } %>
+                  
+                  <% if (report.requirements.volunteers && report.requirements.volunteers.needed && report.requirements.volunteers.remainingNeeded > 0) { %>
+                    <option value="volunteers">Volunteer Services</option>
+                  <% } %>
+                  
+                  <% if (report.requirements.other && report.requirements.other.needed && !report.requirements.other.fulfilled) { %>
+                    <option value="other">Other Resources</option>
+                  <% } %>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="quantity" class="form-label">Quantity</label>
+                <input type="number" id="quantity" name="quantity" min="1" class="form-control" required>
+                <p class="form-hint">
+                  <i class="fas fa-info-circle me-1"></i>
+                  Enter the amount you can provide
+                </p>
+              </div>
+              
+              <div class="form-actions mt-4">
+                <a href="/reports/<%= report._id %>" class="btn btn-secondary">
+                  <i class="fas fa-arrow-left"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-heart"></i> Pledge Donation
+                </button>
+              </div>
+            </form>
+          </div>
+        <% } else { %>
+          <div class="form-actions mt-4" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
+            <a href="/reports/<%= report._id %>" class="btn btn-secondary">
+              <i class="fas fa-arrow-left"></i> Back to Report
+            </a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- AOS Animation Library -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  
+  <script>
+    // Initialize AOS animation
+    AOS.init({
+      once: true,
+      duration: 800
+    });
+  </script>
+</body>
+</html>

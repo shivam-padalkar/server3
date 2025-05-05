@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>New Disaster Report</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #3a86ff;
+      --primary-light: rgba(58, 134, 255, 0.1);
+      --primary-dark: #2667cc;
+      --secondary: #ff006e;
+      --dark: #2f3542;
+      --light: #f8f9fa;
+      --warning: #ffbe0b;
+      --danger: #fb5607;
+      --success: #06d6a0;
+      --gray: #8d99ae;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fa;
+      color: #333;
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    /* Background Patterns */
+    .bg-pattern {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233a86ff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-dark);
+    }
+    
+    /* Navbar Styling */
+    .navbar {
+      background-color: var(--dark);
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .navbar-brand {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: white !important;
+    }
+    
+    .navbar-brand span {
+      color: var(--primary);
+    }
+    
+    .nav-link {
+      color: rgba(255, 255, 255, 0.85) !important;
+      font-weight: 500;
+      margin: 0 0.5rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+      color: white !important;
+    }
+    
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--primary);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    
+    /* Page Header */
+    .page-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 3rem 0 6rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: -3rem;
+    }
+    
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+      transform: rotate(30deg);
+    }
+    
+    .header-content {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .header-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .header-subtitle {
+      font-weight: 300;
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      opacity: 0.9;
+    }
+    
+    .header-icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      opacity: 0.8;
+    }
+    
+    .current-time {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .current-time i {
+      margin-right: 0.5rem;
+    }
+    
+    /* Main Form Container */
+    .form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 3rem;
+    }
+    
+    .form-header {
+      background: var(--dark);
+      padding: 1.5rem;
+      color: white;
+    }
+    
+    .form-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 1.6rem;
+      margin: 0;
+    }
+    
+    .form-subtitle {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-top: 0.5rem;
+    }
+    
+    .form-body {
+      padding: 2rem;
+    }
+    
+    .form-section {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 2rem;
+    }
+    
+    .form-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    
+    .section-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+    }
+    
+    .section-title i {
+      margin-right: 0.7rem;
+      color: var(--primary);
+      width: 28px;
+      height: 28px;
+      background-color: var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+    
+    /* Form Elements */
+    .form-label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+    }
+    
+    .form-label i {
+      color: var(--primary);
+      margin-right: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .form-control, .form-select {
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      font-size: 1rem;
+      box-shadow: none;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+      box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.1);
+      border-color: var(--primary);
+    }
+    
+    .form-text {
+      margin-top: 0.3rem;
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+    
+    /* Location Search */
+    .location-search {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+    
+    .fetch-btn {
+      background: linear-gradient(to right, var(--warning), #ff9500);
+      color: white;
+      border: none;
+      padding: 0 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+    
+    .fetch-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(255, 190, 11, 0.3);
+    }
+    
+    .fetch-btn i {
+      margin-right: 0.5rem;
+    }
+    
+    /* Map */
+    .map-container {
+      position: relative;
+      height: 350px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      margin-bottom: 1.5rem;
+    }
+    
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+    
+    .map-info {
+      position: absolute;
+      bottom: 15px;
+      left: 15px;
+      background: white;
+      padding: 0.7rem 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      z-index: 999;
+    }
+    
+    .map-info i {
+      color: var(--primary);
+      margin-right: 0.5rem;
+    }
+    
+    /* Coordinates Display */
+    .coordinates {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 1.5rem;
+    }
+    
+    .coord-input {
+      flex: 1;
+      position: relative;
+    }
+    
+    .coord-input .form-control {
+      padding-left: 2.5rem;
+      background-color: var(--light);
+    }
+    
+    .coord-input i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--primary);
+    }
+    
+    /* Image Upload */
+    .file-upload-container {
+      background-color: var(--light);
+      border: 2px dashed #e0e0e0;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+    
+    .file-upload-container:hover {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+    
+    .file-upload-icon {
+      font-size: 2.5rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    .file-upload-text {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    
+    .file-upload-subtext {
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+    
+    .file-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    
+    .image-preview-container {
+      margin-top: 1.5rem;
+      position: relative;
+      display: none;
+    }
+    
+    #preview {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .remove-image {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--danger);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .remove-image:hover {
+      transform: rotate(90deg);
+      background-color: var(--danger);
+      color: white;
+    }
+    
+    /* Requirements Section */
+    .requirements-section {
+      background: var(--light);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .requirements-description {
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+      color: #555;
+    }
+    
+    .requirement-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .requirement-card {
+      flex: 1 1 calc(33.333% - 15px);
+      min-width: 200px;
+      background: white;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .requirement-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .requirement-card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .requirement-checkbox {
+      margin-right: 0.7rem;
+      position: relative;
+      width: 22px;
+      height: 22px;
+    }
+    
+    .requirement-checkbox input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid #e0e0e0;
+      background-color: white;
+      transition: all 0.3s ease;
+    }
+    
+    .requirement-checkbox input:checked ~ .checkmark {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+    
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+      left: 7px;
+      top: 3px;
+      width: 6px;
+      height: 11px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    
+    .requirement-checkbox input:checked ~ .checkmark:after {
+      display: block;
+    }
+    
+    .requirement-label {
+      font-weight: 600;
+      color: var(--dark);
+    }
+    
+    .requirement-quantity {
+      margin-top: 0.8rem;
+      display: none;
+    }
+    
+    .quantity-input {
+      display: flex;
+      align-items: center;
+    }
+    
+    .quantity-input .form-control {
+      text-align: center;
+      font-weight: 600;
+      max-width: 100px;
+      margin: 0 0.5rem;
+    }
+    
+    .quantity-unit {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+    
+    /* Other Requirements */
+    .other-requirements {
+      margin-top: 1.5rem;
+      display: none;
+    }
+    
+    /* Submit Button */
+    .submit-btn {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      font-weight: 600;
+      padding: 0.8rem 2rem;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(58, 134, 255, 0.3);
+    }
+    
+    .submit-btn i {
+      margin-right: 0.7rem;
+    }
+    
+    /* Status Badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    
+    .badge-pending {
+      background-color: rgba(255, 190, 11, 0.1);
+      color: #856404;
+    }
+    
+    .badge-critical {
+      background-color: rgba(251, 86, 7, 0.1);
+      color: #721c24;
+    }
+    
+    .badge-resolved {
+      background-color: rgba(6, 214, 160, 0.1);
+      color: #155724;
+    }
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+      .form-container {
+        max-width: 90%;
+      }
+      
+      .requirement-card {
+        flex: 1 1 calc(50% - 15px);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .page-header {
+        padding: 2rem 0 5rem;
+      }
+      
+      .header-title {
+        font-size: 2rem;
+      }
+      
+      .form-container {
+        max-width: 95%;
+      }
+      
+      .form-body {
+        padding: 1.5rem;
+      }
+      
+      .coordinates {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .requirement-card {
+        flex: 1 1 100%;
+      }
+      
+      .current-time {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-pattern"></div>
+  
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">Disaster<span>Relief</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/reports">Reports</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/media">Media</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/donate">Donate</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/livemap">Live Map</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Header Section -->
+  <header class="page-header text-center">
+    <div class="container">
+      <div class="header-content">
+        <div class="header-icon" data-aos="fade-down">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h1 class="header-title" data-aos="fade-up">Submit a New Disaster Report</h1>
+        <p class="header-subtitle" data-aos="fade-up" data-aos-delay="100">
+          Help us track and respond to disasters by providing accurate information about incidents in your area.
+        </p>
+        <div class="current-time">
+          <i class="far fa-clock"></i> 2025-04-20 19:07:20 UTC
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Main Form -->
+  <div class="container mt-n5 mb-5">
+    <div class="form-container" data-aos="fade-up">
+      <div class="form-header">
+        <h2 class="form-title">Disaster Reporting Form</h2>
+        <p class="form-subtitle">Please fill in all required details accurately to help coordinate relief efforts</p>
+      </div>
+      
+      <div class="form-body">
+        <form action="/reports" method="POST" enctype="multipart/form-data" id="reportForm">
+          <!-- Basic Information Section -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fas fa-info-circle"></i> Basic Information
+            </h3>
+            
+            <div class="mb-3">
+              <label for="name" class="form-label">
+                <i class="fas fa-user"></i> Reporter Name
+              </label>
+              <input type="text" class="form-control" name="report[name]" id="name" required />
+            </div>
+            
+            <div class="mb-3">
+              <label for="message" class="form-label">
+                <i class="fas fa-comment-alt"></i> Disaster Description
+              </label>
+              <textarea class="form-control" name="report[message]" id="message" rows="4" required 
+                placeholder="Please provide detailed information about the disaster..."></textarea>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="status" class="form-label">
+                  <i class="fas fa-exclamation-circle"></i> Status
+                </label>
+                <div class="mb-2">
+                  <span class="status-badge badge-pending">
+                    <i class="fas fa-clock me-1"></i> Pending
+                  </span>
+                  <span class="status-badge badge-critical">
+                    <i class="fas fa-exclamation-triangle me-1"></i> Critical
+                  </span>
+                  <span class="status-badge badge-resolved">
+                    <i class="fas fa-check-circle me-1"></i> Resolved
+                  </span>
+                </div>
+                <select class="form-select" name="report[status]" id="status">
+                  <option value="pending">Pending</option>
+                  <option value="critical">Critical</option>
+                  <option value="resolved">Resolved</option>
+                </select>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="type" class="form-label">
+                  <i class="fas fa-bolt"></i> Disaster Type
+                </label>
+                <select class="form-select" name="report[disasterType]" id="type" required>
+                  <option disabled selected value="">-- Select Disaster Type --</option>
+                  <option value="Earthquake">Earthquake</option>
+                  <option value="Flood">Flood</option>
+                  <option value="Cyclone">Cyclone</option>
+                  <option value="Landslide">Landslide</option>
+                  <option value="Wildfire">Wildfire</option>
+                  <option value="Tsunami">Tsunami</option>
+                  <option value="Drought">Drought</option>
+                  <option value="Volcanic Eruption">Volcanic Eruption</option>
+                  <option value="Thunderstorm">Thunderstorm</option>
+                  <option value="Heatwave">Heatwave</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Location Section -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fas fa-map-marker-alt"></i> Location Information
+            </h3>
+            
+            <div class="mb-3">
+              <label for="location" class="form-label">
+                <i class="fas fa-search-location"></i> Search Location
+              </label>
+              <div class="location-search">
+                <input 
+                  type="text" 
+                  id="location" 
+                  class="form-control"
+                  placeholder="Enter a location (e.g., Mumbai, Delhi, Chennai)" 
+                  required 
+                />
+                <button type="button" id="fetchBtn" class="fetch-btn">
+                  <i class="fas fa-search"></i> Find
+                </button>
+              </div>
+            </div>
+            
+            <div class="map-container">
+              <div id="map"></div>
+              <div class="map-info">
+                <i class="fas fa-mouse-pointer"></i> Click and drag the marker to adjust location
+              </div>
+            </div>
+            
+            <div class="coordinates">
+              <div class="coord-input">
+                <label for="lat" class="form-label">Latitude</label>
+                <i class="fas fa-arrows-alt-v"></i>
+                <input type="text" name="report[location][lat]" id="lat" class="form-control" readonly />
+              </div>
+              
+              <div class="coord-input">
+                <label for="lng" class="form-label">Longitude</label>
+                <i class="fas fa-arrows-alt-h"></i>
+                <input type="text" name="report[location][lng]" id="lng" class="form-control" readonly />
+              </div>
+            </div>
+          </div>
+          
+          <!-- Requirements Section -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fas fa-hands-helping"></i> Resource Requirements
+            </h3>
+            
+            <p class="requirements-description">
+              Select all resources needed in the affected area and specify quantities where applicable:
+            </p>
+            
+            <div class="requirements-section">
+              <div class="requirement-row">
+                <!-- Food -->
+                <div class="requirement-card" data-type="food">
+                  <div class="requirement-card-header">
+                    <label class="requirement-checkbox">
+                      <input type="checkbox" id="food" name="report[requirements][food][needed]" value="true" onchange="toggleQuantity('food')">
+                      <input type="hidden" name="report[requirements][food][needed]" value="false" class="checkbox-hidden">
+                      <span class="checkmark"></span>
+                    </label>
+                    <span class="requirement-label">Food Supplies</span>
+                  </div>
+                  <div class="requirement-quantity" id="food-quantity">
+                    <div class="quantity-input">
+                      <label class="form-label">Quantity</label>
+                      <input type="number" id="food-qty" name="report[requirements][food][quantity]" min="0" class="form-control">
+                      <span class="quantity-unit">packs</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Water -->
+                <div class="requirement-card" data-type="water">
+                  <div class="requirement-card-header">
+                    <label class="requirement-checkbox">
+                      <input type="checkbox" id="water" name="report[requirements][water][needed]" value="true" onchange="toggleQuantity('water')">
+                      <input type="hidden" name="report[requirements][water][needed]" value="false" class="checkbox-hidden">
+                      <span class="checkmark"></span>
+                    </label>
+                    <span class="requirement-label">Clean Water</span>
+                  </div>
+                  <div class="requirement-quantity" id="water-quantity">
+                    <div class="quantity-input">
+                      <label class="form-label">Quantity</label>
+                      <input type="number" id="water-qty" name="report[requirements][water][quantity]" min="0" class="form-control">
+                      <span class="quantity-unit">liters</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Medicine -->
+                <div class="requirement-card" data-type="medicine">
+                  <div class="requirement-card-header">
+                    <label class="requirement-checkbox">
+                      <input type="checkbox" id="medicine" name="report[requirements][medicine][needed]" value="true" onchange="toggleQuantity('medicine')">
+                      <input type="hidden" name="report[requirements][medicine][needed]" value="false" class="checkbox-hidden">
+                      <span class="checkmark"></span>
+                    </label>
+                    <span class="requirement-label">Medical Supplies</span>
+                  </div>
+                  <div class="requirement-quantity" id="medicine-quantity">
+                    <div class="quantity-input">
+                      <label class="form-label">Quantity</label>
+                      <input type="number" id="medicine-qty" name="report[requirements][medicine][quantity]" min="0" class="form-control">
+                      <span class="quantity-unit">kits</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Clothing -->
+                <div class="requirement-card" data-type="clothing">
+                  <div class="requirement-card-header">
+                    <label class="requirement-checkbox">
+                      <input type="checkbox" id="clothing" name="report[requirements][clothing][needed]" value="true" onchange="toggleQuantity('clothing')">
+                      <input type="hidden" name="report[requirements][clothing][needed]" value="false" class="checkbox-hidden">
+                      <span class="checkmark"></span>
+                    </label>
+                    <span class="requirement-label">Clothing</span>
+                  </div>
+                  <div class="requirement-quantity" id="clothing-quantity">
+                    <div class="quantity-input">
+                      <label class="form-label">Quantity</label>
+                      <input type="number" id="clothing-qty" name="report[requirements][clothing][quantity]" min="0" class="form-control">
+                      <span class="quantity-unit">sets</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Shelter -->
+                <div class="requirement-card" data-type="shelter">
+                  <div class="requirement-card-header">
+                    <label class="requirement-checkbox">
+                      <input type="checkbox" id="shelter" name="report[requirements][shelter][needed]" value="true" onchange="toggleQuantity('shelter')">
+                      <input type="hidden" name="report[requirements][shelter][needed]" value="false" class="checkbox-hidden">
+                      <span class="checkmark"></span>
+                    </label>
+                    <span class="requirement-label">Temporary Shelter</span>
+                  </div>
+                  <div class="requirement-quantity" id="shelter-quantity">
+                    <div class="quantity-input">
+                      <label class="form-label">Quantity</label>
+                      <input type="number" id="shelter-qty" name="report[requirements][shelter][quantity]" min="0" class="form-control">
+                      <span class="quantity-unit">units</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Volunteers -->
+                <div class="requirement-card" data-type="volunteers">
+                  <div class="requirement-card-header">
+                    <label class="requirement-checkbox">
+                      <input type="checkbox" id="volunteers" name="report[requirements][volunteers][needed]" value="true" onchange="toggleQuantity('volunteers')">
+                      <input type="hidden" name="report[requirements][volunteers][needed]" value="false" class="checkbox-hidden">
+                      <span class="checkmark"></span>
+                    </label>
+                    <span class="requirement-label">Volunteers</span>
+                  </div>
+                  <div class="requirement-quantity" id="volunteers-quantity">
+                    <div class="quantity-input">
+                      <label class="form-label">Quantity</label>
+                      <input type="number" id="volunteers-qty" name="report[requirements][volunteers][quantity]" min="0" class="form-control">
+                      <span class="quantity-unit">people</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Other Requirements -->
+              <div class="mt-4">
+                <div class="requirement-card" data-type="other">
+                  <div class="requirement-card-header">
+                    <label class="requirement-checkbox">
+                      <input type="checkbox" id="other" name="report[requirements][other][needed]" value="true" onchange="toggleOther()">
+                      <input type="hidden" name="report[requirements][other][needed]" value="false" class="checkbox-hidden">
+                      <span class="checkmark"></span>
+                    </label>
+                    <span class="requirement-label">Other Requirements</span>
+                  </div>
+                </div>
+                <div class="other-requirements" id="other-details-container">
+                  <textarea id="other-details" name="report[requirements][other][details]" class="form-control" rows="3" placeholder="Please specify other requirements needed..."></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Image Upload Section -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fas fa-camera"></i> Image Evidence
+            </h3>
+            
+            <div class="file-upload-container" id="dropArea">
+              <div class="file-upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+              </div>
+              <h4 class="file-upload-text">Upload Disaster Image</h4>
+              <p class="file-upload-subtext">Click or drag and drop your image here</p>
+              <input type="file" id="image" name="image" class="file-input" accept="image/*" />
+            </div>
+            
+            <div class="image-preview-container" id="previewContainer">
+              <img id="preview" />
+              <div class="remove-image" id="removeImage">
+                <i class="fas fa-times"></i>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Reporter Information -->
+          <input type="hidden" name="report[reportedBy]" value="muhammadparkar">
+          
+          <!-- Submit Button -->
+          <div class="text-center mt-4">
+            <button type="submit" class="submit-btn">
+              <i class="fas fa-paper-plane"></i> Submit Report
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- AOS Animation Library -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  
+  <script>
+    // Initialize AOS Animation
+    AOS.init({
+      once: true,
+      duration: 800
+    });
+    
+    // Map and Location Functionality
+    const locationInput = document.getElementById('location');
+    const fetchBtn = document.getElementById('fetchBtn');
+    const latInput = document.getElementById('lat');
+    const lngInput = document.getElementById('lng');
+    
+    const map = L.map('map').setView([20.5937, 78.9629], 5); // default India
+    
+    // Custom marker icon
+    const customIcon = L.icon({
+      iconUrl: 'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-2x-red.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+    
+    const marker = L.marker([20.5937, 78.9629], {
+      icon: customIcon,
+      draggable: true
+    }).addTo(map);
+    
+    // Update coordinates when marker is dragged
+    marker.on('dragend', function(e) {
+      const position = marker.getLatLng();
+      latInput.value = position.lat.toFixed(6);
+      lngInput.value = position.lng.toFixed(6);
+    });
+    
+    // Map tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    
+    // Fetch location from input
+    fetchBtn.addEventListener('click', () => {
+      const query = locationInput.value;
+      if (!query) return alert('Please enter a location.');
+      
+      fetchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+      fetchBtn.disabled = true;
+      
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => {
+          fetchBtn.innerHTML = '<i class="fas fa-search"></i> Find';
+          fetchBtn.disabled = false;
+          
+          if (data.length === 0) {
+            alert('Location not found. Try something else.');
+            return;
+          }
+          const { lat, lon } = data[0];
+          latInput.value = lat;
+          lngInput.value = lon;
+          
+          map.setView([lat, lon], 12);
+          marker.setLatLng([lat, lon]);
+        })
+        .catch(() => {
+          fetchBtn.innerHTML = '<i class="fas fa-search"></i> Find';
+          fetchBtn.disabled = false;
+          alert('Error fetching location data.');
+        });
+    });
+    
+    // Image Upload and Preview
+    const dropArea = document.getElementById('dropArea');
+    const fileInput = document.getElementById('image');
+    const preview = document.getElementById('preview');
+    const previewContainer = document.getElementById('previewContainer');
+    const removeImage = document.getElementById('removeImage');
+    
+    // Handle file selection
+    fileInput.addEventListener('change', function(e) {
+      handleFiles(e.target.files);
+    });
+    
+    // Handle drag and drop
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropArea.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight() {
+      dropArea.classList.add('highlight');
+    }
+    
+    function unhighlight() {
+      dropArea.classList.remove('highlight');
+    }
+    
+    dropArea.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleFiles(files);
+    }
+    
+    function handleFiles(files) {
+      if (files.length) {
+        const file = files[0];
+        if (file.type.startsWith('image/')) {
+          fileInput.files = files;
+          displayPreview(file);
+        } else {
+          alert('Please select an image file.');
+        }
+      }
+    }
+    
+    function displayPreview(file) {
+      preview.src = URL.createObjectURL(file);
+      previewContainer.style.display = 'block';
+    }
+    
+    // Remove image
+    removeImage.addEventListener('click', function() {
+      fileInput.value = '';
+      preview.src = '';
+      previewContainer.style.display = 'none';
+    });
+    
+    // Toggle quantity fields based on checkbox
+    function toggleQuantity(type) {
+      const checkbox = document.getElementById(type);
+      const quantityField = document.getElementById(`${type}-quantity`);
+      const hiddenField = checkbox.nextElementSibling;
+      
+      if (checkbox.checked) {
+        quantityField.style.display = 'block';
+        checkbox.value = 'true';
+        hiddenField.disabled = true;
+      } else {
+        quantityField.style.display = 'none';
+        document.getElementById(`${type}-qty`).value = '';
+        checkbox.value = 'false';
+        hiddenField.disabled = false;
+      }
+    }
+    
+    // Toggle other details textarea
+    function toggleOther() {
+      const checkbox = document.getElementById('other');
+      const otherDetails = document.getElementById('other-details-container');
+      const hiddenField = checkbox.nextElementSibling;
+      
+      if (checkbox.checked) {
+        otherDetails.style.display = 'block';
+        checkbox.value = 'true';
+        hiddenField.disabled = true;
+      } else {
+        otherDetails.style.display = 'none';
+        document.getElementById('other-details').value = '';
+        checkbox.value = 'false';
+        hiddenField.disabled = false;
+      }
+    }
+    
+    // Handle form submission to ensure correct checkbox values
+    document.getElementById('reportForm').addEventListener('submit', function(e) {
+      // Handle checkboxes properly
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+          // If checkbox is checked, disable the hidden field so only the checked value is submitted
+          const hiddenField = checkbox.nextElementSibling;
+          if (hiddenField && hiddenField.classList.contains('checkbox-hidden')) {
+            hiddenField.disabled = true;
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

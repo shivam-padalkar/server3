@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Disaster Report | DisasterRelief</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- AOS Animation Library -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    :root {
+      --primary: #3a86ff;
+      --primary-dark: #2667cc;
+      --secondary: #ff006e;
+      --dark: #2b2d42;
+      --light: #f8f9fa;
+      --warning: #ffbe0b;
+      --danger: #fb5607;
+      --success: #06d6a0;
+      --gray: #8d99ae;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+      background-image: url('https://images.unsplash.com/photo-1531685250784-7569952593d2?q=80&w=1974&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--dark);
+      min-height: 100vh;
+      position: relative;
+    }
+    
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 100%);
+      z-index: -1;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-dark);
+    }
+    
+    /* Navbar Styling */
+    .navbar {
+      padding: 1rem 2rem;
+      background-color: rgba(43, 45, 66, 0.95) !important;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .navbar-brand {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: white !important;
+    }
+    
+    .navbar-brand span {
+      color: var(--primary);
+    }
+    
+    .nav-link {
+      color: rgba(255, 255, 255, 0.85) !important;
+      font-weight: 500;
+      margin: 0 0.5rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+      color: white !important;
+    }
+    
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--primary);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    
+    .nav-link.active {
+      color: white !important;
+      font-weight: 600;
+    }
+    
+    .nav-link.active::after {
+      width: 100%;
+    }
+    
+    /* Main Container */
+    .main-container {
+      max-width: 900px;
+      margin: 2rem auto 5rem;
+      padding: 0 1rem;
+    }
+    
+    /* Form Card */
+    .form-card {
+      background-color: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .form-header {
+      background: linear-gradient(135deg, var(--primary) 0%, #4361ee 100%);
+      padding: 2.5rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .form-header h1 {
+      font-size: 2rem;
+      position: relative;
+      z-index: 2;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-header p {
+      opacity: 0.9;
+      position: relative;
+      z-index: 2;
+      font-weight: 300;
+      margin-bottom: 0;
+    }
+    
+    .form-header::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 1;
+    }
+    
+    .form-header::after {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      left: -80px;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      z-index: 1;
+    }
+    
+    .disaster-icon {
+      position: absolute;
+      top: 25px;
+      right: 35px;
+      font-size: 3.5rem;
+      opacity: 0.2;
+      z-index: 2;
+    }
+    
+    .form-body {
+      padding: 3rem;
+    }
+    
+    /* Form Elements */
+    .form-label {
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      padding: 0.8rem;
+      transition: all 0.3s ease;
+      box-shadow: none;
+      background-color: #f8f9fa;
+    }
+    
+    .form-control:focus {
+      box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
+      border-color: var(--primary);
+      background-color: white;
+    }
+    
+    .form-select {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      padding: 0.8rem;
+      transition: all 0.3s ease;
+      box-shadow: none;
+      background-color: #f8f9fa;
+    }
+    
+    .form-select:focus {
+      box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
+      border-color: var(--primary);
+      background-color: white;
+    }
+    
+    textarea.form-control {
+      resize: vertical;
+      min-height: 120px;
+    }
+    
+    /* Map Container */
+    .map-container {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      margin: 2rem 0;
+      position: relative;
+    }
+    
+    #map {
+      height: 350px;
+      width: 100%;
+    }
+    
+    .map-overlay {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background-color: white;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .map-overlay p {
+      font-size: 0.85rem;
+      margin: 0;
+      color: var(--gray);
+    }
+    
+    .map-overlay p strong {
+      color: var(--dark);
+    }
+    
+    /* Requirements Section */
+    .requirements-section {
+      background-color: #f8f9fa;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      position: relative;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .requirements-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 30px;
+      height: 3px;
+      width: 50px;
+      background-color: var(--primary);
+      border-radius: 0 0 3px 3px;
+    }
+    
+    .section-heading {
+      font-size: 1.5rem;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+    
+    .section-subheading {
+      color: var(--gray);
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+    
+    .requirement-item {
+      background-color: white;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .requirement-item:hover {
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transform: translateY(-3px);
+    }
+    
+    .requirement-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .form-check {
+      min-height: auto;
+      margin: 0;
+    }
+    
+    .form-check-input {
+      width: 1.25rem;
+      height: 1.25rem;
+      cursor: pointer;
+    }
+    
+    .form-check-input:checked {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+    
+    .form-check-label {
+      font-weight: 600;
+      color: var(--dark);
+      cursor: pointer;
+      padding-left: 0.5rem;
+      user-select: none;
+    }
+    
+    .quantity-field {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-left: auto;
+    }
+    
+    .quantity-field label {
+      margin: 0;
+      font-weight: 500;
+      color: var(--dark);
+    }
+    
+    .quantity-field .form-control {
+      width: 100px;
+      padding: 0.5rem;
+      text-align: center;
+    }
+    
+    .quantity-unit {
+      color: var(--gray);
+      font-weight: 500;
+    }
+    
+    .requirement-icon {
+      color: var(--primary);
+      font-size: 1.25rem;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .other-details {
+      flex-basis: 100%;
+      margin-top: 1rem;
+      margin-left: 2.5rem;
+    }
+    
+    /* Form Actions */
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, #4361ee 100%);
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(58, 134, 255, 0.3);
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #4361ee 0%, var(--primary) 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(58, 134, 255, 0.4);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(-1px);
+    }
+    
+    .back-link {
+      color: var(--gray);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .back-link:hover {
+      color: var(--primary);
+    }
+    
+    .back-link i {
+      transition: transform 0.3s ease;
+    }
+    
+    .back-link:hover i {
+      transform: translateX(-5px);
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+      .form-header {
+        padding: 2rem;
+      }
+      
+      .form-body {
+        padding: 2rem;
+      }
+      
+      .map-container {
+        margin: 1.5rem 0;
+      }
+      
+      #map {
+        height: 300px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .requirement-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .quantity-field {
+        margin-left: 2.5rem;
+        margin-top: 0.5rem;
+      }
+      
+      .other-details {
+        margin-left: 0;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+      
+      .btn-primary {
+        width: 100%;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .form-header {
+        padding: 1.5rem;
+      }
+      
+      .form-body {
+        padding: 1.5rem;
+      }
+      
+      .map-container {
+        margin: 1rem 0;
+      }
+      
+      #map {
+        height: 250px;
+      }
+      
+      .requirements-section {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">Disaster<span>Relief</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/reports">Reports</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/media">Media</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/livemap">Live Map</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container main-container">
+    <div class="form-card" data-aos="fade-up">
+      <div class="form-header">
+        <i class="fas fa-edit disaster-icon"></i>
+        <h1>Edit Disaster Report</h1>
+        <p>Update information about this disaster to help coordinate relief efforts.</p>
+      </div>
+      
+      <div class="form-body">
+        <form action="/reports/<%= report._id %>?_method=PUT" method="POST">
+          <!-- Basic Information -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="name" class="form-label">Report Title</label>
+              <input type="text" class="form-control" name="report[name]" id="name" value="<%= report.name %>" required>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="type" class="form-label">Disaster Type</label>
+              <select class="form-select" name="report[disasterType]" id="type" required>
+                <option value="Earthquake" <%= report.disasterType === 'Earthquake' ? 'selected' : '' %>>Earthquake</option>
+                <option value="Flood" <%= report.disasterType === 'Flood' ? 'selected' : '' %>>Flood</option>
+                <option value="Cyclone" <%= report.disasterType === 'Cyclone' ? 'selected' : '' %>>Cyclone</option>
+                <option value="Landslide" <%= report.disasterType === 'Landslide' ? 'selected' : '' %>>Landslide</option>
+                <option value="Wildfire" <%= report.disasterType === 'Wildfire' ? 'selected' : '' %>>Wildfire</option>
+                <option value="Tsunami" <%= report.disasterType === 'Tsunami' ? 'selected' : '' %>>Tsunami</option>
+                <option value="Drought" <%= report.disasterType === 'Drought' ? 'selected' : '' %>>Drought</option>
+                <option value="Volcanic Eruption" <%= report.disasterType === 'Volcanic Eruption' ? 'selected' : '' %>>Volcanic Eruption</option>
+                <option value="Thunderstorm" <%= report.disasterType === 'Thunderstorm' ? 'selected' : '' %>>Thunderstorm</option>
+                <option value="Heatwave" <%= report.disasterType === 'Heatwave' ? 'selected' : '' %>>Heatwave</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="message" class="form-label">Detailed Description</label>
+            <textarea class="form-control" name="report[message]" id="message" rows="4" required><%= report.message %></textarea>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="status" class="form-label">Current Status</label>
+              <select class="form-select" name="report[status]" id="status">
+                <option value="pending" <%= report.status === 'pending' ? 'selected' : '' %>>Pending Assessment</option>
+                <option value="critical" <%= report.status === 'critical' ? 'selected' : '' %>>Critical - Urgent Help Needed</option>
+                <option value="resolved" <%= report.status === 'resolved' ? 'selected' : '' %>>Resolved - Situation Managed</option>
+              </select>
+            </div>
+          </div>
+          
+          <!-- Location Information -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="lat" class="form-label">Latitude</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                <input type="text" class="form-control" name="report[location][lat]" id="lat" value="<%= report.location.lat %>" readonly>
+              </div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="lng" class="form-label">Longitude</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-globe-asia"></i></span>
+                <input type="text" class="form-control" name="report[location][lng]" id="lng" value="<%= report.location.lng %>" readonly>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Map -->
+          <div class="map-container">
+            <div id="map"></div>
+            <div class="map-overlay">
+              <p><strong>Current Location</strong></p>
+              <p><i class="fas fa-map-pin me-1"></i> <%= report.location.lat.toFixed(4) %>, <%= report.location.lng.toFixed(4) %></p>
+            </div>
+          </div>
+          
+          <!-- Requirements Section -->
+          <div class="requirements-section">
+            <h3 class="section-heading">Resources & Requirements</h3>
+            <p class="section-subheading">Check all resources needed in the affected area and specify quantities if applicable</p>
+            
+            <div class="requirement-item">
+              <i class="fas fa-utensils requirement-icon"></i>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="food" name="report[requirements][food][needed]" value="true" 
+                  <%= report.requirements?.food?.needed ? 'checked' : '' %> onchange="toggleQuantity('food')">
+                <label class="form-check-label" for="food">Food Supplies</label>
+              </div>
+              <div id="food-quantity" class="quantity-field" style="display: <%= report.requirements?.food?.needed ? 'flex' : 'none' %>">
+                <label for="food-qty">Quantity:</label>
+                <input type="number" class="form-control" id="food-qty" name="report[requirements][food][quantity]" min="0" 
+                  value="<%= report.requirements?.food?.quantity || '' %>">
+                <span class="quantity-unit">packs</span>
+              </div>
+            </div>
+            
+            <div class="requirement-item">
+              <i class="fas fa-tint requirement-icon"></i>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="water" name="report[requirements][water][needed]" value="true" 
+                  <%= report.requirements?.water?.needed ? 'checked' : '' %> onchange="toggleQuantity('water')">
+                <label class="form-check-label" for="water">Clean Water</label>
+              </div>
+              <div id="water-quantity" class="quantity-field" style="display: <%= report.requirements?.water?.needed ? 'flex' : 'none' %>">
+                <label for="water-qty">Quantity:</label>
+                <input type="number" class="form-control" id="water-qty" name="report[requirements][water][quantity]" min="0" 
+                  value="<%= report.requirements?.water?.quantity || '' %>">
+                <span class="quantity-unit">liters</span>
+              </div>
+            </div>
+            
+            <div class="requirement-item">
+              <i class="fas fa-medkit requirement-icon"></i>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="medicine" name="report[requirements][medicine][needed]" value="true" 
+                  <%= report.requirements?.medicine?.needed ? 'checked' : '' %> onchange="toggleQuantity('medicine')">
+                <label class="form-check-label" for="medicine">Medical Supplies</label>
+              </div>
+              <div id="medicine-quantity" class="quantity-field" style="display: <%= report.requirements?.medicine?.needed ? 'flex' : 'none' %>">
+                <label for="medicine-qty">Quantity:</label>
+                <input type="number" class="form-control" id="medicine-qty" name="report[requirements][medicine][quantity]" min="0" 
+                  value="<%= report.requirements?.medicine?.quantity || '' %>">
+                <span class="quantity-unit">kits</span>
+              </div>
+            </div>
+            
+            <div class="requirement-item">
+              <i class="fas fa-tshirt requirement-icon"></i>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="clothing" name="report[requirements][clothing][needed]" value="true" 
+                  <%= report.requirements?.clothing?.needed ? 'checked' : '' %> onchange="toggleQuantity('clothing')">
+                <label class="form-check-label" for="clothing">Clothing</label>
+              </div>
+              <div id="clothing-quantity" class="quantity-field" style="display: <%= report.requirements?.clothing?.needed ? 'flex' : 'none' %>">
+                <label for="clothing-qty">Quantity:</label>
+                <input type="number" class="form-control" id="clothing-qty" name="report[requirements][clothing][quantity]" min="0" 
+                  value="<%= report.requirements?.clothing?.quantity || '' %>">
+                <span class="quantity-unit">sets</span>
+              </div>
+            </div>
+            
+            <div class="requirement-item">
+              <i class="fas fa-home requirement-icon"></i>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="shelter" name="report[requirements][shelter][needed]" value="true" 
+                  <%= report.requirements?.shelter?.needed ? 'checked' : '' %> onchange="toggleQuantity('shelter')">
+                <label class="form-check-label" for="shelter">Temporary Shelter</label>
+              </div>
+              <div id="shelter-quantity" class="quantity-field" style="display: <%= report.requirements?.shelter?.needed ? 'flex' : 'none' %>">
+                <label for="shelter-qty">Quantity:</label>
+                <input type="number" class="form-control" id="shelter-qty" name="report[requirements][shelter][quantity]" min="0" 
+                  value="<%= report.requirements?.shelter?.quantity || '' %>">
+                <span class="quantity-unit">units</span>
+              </div>
+            </div>
+            
+            <div class="requirement-item">
+              <i class="fas fa-users requirement-icon"></i>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="volunteers" name="report[requirements][volunteers][needed]" value="true" 
+                  <%= report.requirements?.volunteers?.needed ? 'checked' : '' %> onchange="toggleQuantity('volunteers')">
+                <label class="form-check-label" for="volunteers">Volunteers Needed</label>
+              </div>
+              <div id="volunteers-quantity" class="quantity-field" style="display: <%= report.requirements?.volunteers?.needed ? 'flex' : 'none' %>">
+                <label for="volunteers-qty">Quantity:</label>
+                <input type="number" class="form-control" id="volunteers-qty" name="report[requirements][volunteers][quantity]" min="0" 
+                  value="<%= report.requirements?.volunteers?.quantity || '' %>">
+                <span class="quantity-unit">people</span>
+              </div>
+            </div>
+            
+            <div class="requirement-item">
+              <i class="fas fa-plus-circle requirement-icon"></i>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="other" name="report[requirements][other][needed]" value="true" 
+                  <%= report.requirements?.other?.needed ? 'checked' : '' %> onchange="toggleOther()">
+                <label class="form-check-label" for="other">Other Requirements</label>
+              </div>
+              
+              <textarea id="other-details" class="form-control other-details" name="report[requirements][other][details]" 
+                placeholder="Please specify other requirements needed..." rows="3" 
+                style="display: <%= report.requirements?.other?.needed ? 'block' : 'none' %>"><%= report.requirements?.other?.details || '' %></textarea>
+            </div>
+          </div>
+          
+          <input type="hidden" name="report[reportedBy]" value="<%= report.reportedBy || 'muhammadparkar' %>">
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save me-2"></i> Update Report
+            </button>
+          </div>
+        </form>
+        
+        <a href="/reports/<%= report._id %>" class="back-link">
+          <i class="fas fa-arrow-left"></i> Back to Report Details
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- AOS Animation Library -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Initialize AOS animation
+    AOS.init({
+      once: true,
+      duration: 800
+    });
+    
+    // Initialize the map
+    const lat = <%= report.location.lat %>;
+    const lng = <%= report.location.lng %>;
+    const map = L.map('map').setView([lat, lng], 12);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    
+    // Add a marker at the report location
+    const marker = L.marker([lat, lng], {
+      draggable: false,
+      title: "<%= report.name %>"
+    }).addTo(map);
+    
+    marker.bindPopup("<strong><%= report.name %></strong><br>Location: " + lat.toFixed(6) + ", " + lng.toFixed(6)).openPopup();
+
+    // Toggle quantity fields based on checkbox
+    function toggleQuantity(type) {
+      const checkbox = document.getElementById(type);
+      const quantityField = document.getElementById(`${type}-quantity`);
+      if (checkbox.checked) {
+        quantityField.style.display = 'flex';
+      } else {
+        quantityField.style.display = 'none';
+        document.getElementById(`${type}-qty`).value = '';
+      }
+    }
+
+    // Toggle other details textarea
+    function toggleOther() {
+      const checkbox = document.getElementById('other');
+      const otherDetails = document.getElementById('other-details');
+      if (checkbox.checked) {
+        otherDetails.style.display = 'block';
+      } else {
+        otherDetails.style.display = 'none';
+        otherDetails.value = '';
+      }
+    }
+    
+    // Get disaster type icon
+    function getDisasterIcon(disasterType) {
+      const type = document.getElementById('type').value.toLowerCase();
+      const iconMap = {
+        'earthquake': 'fas fa-house-damage',
+        'flood': 'fas fa-water',
+        'cyclone': 'fas fa-wind',
+        'landslide': 'fas fa-mountain',
+        'wildfire': 'fas fa-fire',
+        'tsunami': 'fas fa-water',
+        'drought': 'fas fa-sun',
+        'volcanic eruption': 'fas fa-volcano',
+        'thunderstorm': 'fas fa-bolt',
+        'heatwave': 'fas fa-temperature-high'
+      };
+      return iconMap[type] || 'fas fa-exclamation-triangle';
+    }
+    
+    // Update disaster icon when type changes
+    document.getElementById('type').addEventListener('change', function() {
+      const disasterIcon = document.querySelector('.disaster-icon');
+      disasterIcon.className = 'disaster-icon ' + getDisasterIcon(this.value);
+    });
+    
+    // Initialize disaster icon
+    document.querySelector('.disaster-icon').className = 'disaster-icon ' + getDisasterIcon(document.getElementById('type').value);
+  </script>
+</body>
+</html>
